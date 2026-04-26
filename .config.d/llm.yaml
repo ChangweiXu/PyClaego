@@ -1,0 +1,134 @@
+
+default_provider: "kimi_code"
+providers:
+  kimi_code:
+    api: "kimi_anthropic"          # Anthropic 协议兼容层（Moonshot Kimi Code 套餐）
+    api_key: ${KIMI_CODE_API_KEY:}
+    base_url: "https://api.kimi.com/coding"
+    model: "k2p5"
+    temperature: 0.7
+    max_tokens: 8192
+    max_context_tokens: 262144
+
+  moonshot_kimi:
+    api: "openai"                  # API 类型: openai, anthropic, gemini
+    api_key: ${MOONSHOT_API_KEY:}
+    base_url: "https://api.moonshot.cn/v1"
+    model: "kimi-k2.5"
+    temperature: 1.0
+    max_tokens: 8192
+    max_context_tokens: 262144
+
+  glm5_1:  # GLM 5.1s 模型配置示例
+    api: "openai"                  # API 类型: openai, anthropic, gemini
+    api_key: ${ZHIPU_API_KEY:}
+    base_url: "https://open.bigmodel.cn/api/paas/v4"  # 大陆版
+    # base_url: "https://api.z.ai/api/paas/v4/"  # 国际版
+    model: "glm-5.1"
+    temperature: 1.0
+    max_tokens: 8192
+    max_context_tokens: 196608
+
+  dpsk_v4p:  # DeepSeek V4 Pro 模型配置示例
+    api: "deepseek"                # OpenAI 协议 + DeepSeek reasoning_content 思考模式
+    api_key: ${DEEPSEEK_API_KEY:}
+    base_url: "https://api.deepseek.com"              # OpenAI
+    model: "deepseek-v4-pro"
+    max_tokens: 25600             # max: 384K
+    max_context_tokens: 960000    # max: 1M
+    reasoning_effort: "high"
+    extra_body:                   # 额外请求体参数示例
+      thinking:
+        type: "enabled"           # 启用深度思考模式
+
+  dpsk_v4p_ant:  # DeepSeek V4 Pro 模型配置示例
+    api: "deepseek_anthropic"      # DeepSeek Anthropic-compat 端点
+    api_key: ${DEEPSEEK_API_KEY:}
+    base_url: "https://api.deepseek.com/anthropic"    # Anthropic
+    model: "deepseek-v4-pro"
+    max_tokens: 25600             # max: 384K
+    max_context_tokens: 960000    # max: 1M
+    extra_body:                   # 额外请求体参数示例
+      output_config:              # 输出配置
+        effort: "high"            # 启用深度思考模式
+
+  qwen3_30b_a3b:  # Qwen3-30B-A3B 模型配置示例
+    # 注意: 不同地域的base_url不通用（下方示例使用新加坡地域的base_url）
+    # - 新加坡: https://dashscope-intl.aliyuncs.com/compatible-mode/v1
+    # - 美国（弗吉尼亚）: https://dashscope-us.aliyuncs.com/compatible-mode/v1
+    # - 中国北京: https://dashscope.aliyuncs.com/compatible-mode/v1
+    # - 中国香港：https://cn-hongkong.dashscope.aliyuncs.com/compatible-mode/v1
+    api: "openai"                  # API 类型: openai, anthropic, gemini
+    api_key: ${DASHSCOPE_API_KEY:}
+    base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"
+    model: "qwen3-30b-a3b"
+    temperature: 1.0
+    max_tokens: 4096
+    max_context_tokens: 25600
+
+  gpt5_4:  # GPT-5.4 模型配置示例
+    api: "openai"                  # API 类型: openai, anthropic, gemini
+    api_key: ${GPT_API_KEY:}
+    base_url: "https://your-openai-api.com/v1"
+    model: "custom-gpt-model-name"
+    temperature: 1.0
+    max_tokens: 8192
+    max_context_tokens: 180000
+
+  clo4_7:  # Claude Opus 4.7 模型配置示例
+    api: "anthropic"               # API 类型: openai, anthropic, gemini
+    api_key: ${CLAUDE_API_KEY:}
+    base_url: "https://your-anthropic-api.com/v1"
+    model: "custom-claude-model-name"
+    temperature: 1.0
+    max_tokens: 12800
+    max_context_tokens: 960000
+
+  cls4_6:  # Claude Sonnet 4.6 模型配置示例
+    api: "anthropic"               # API 类型: openai, anthropic, gemini
+    api_key: ${CLAUDE_API_KEY:}
+    base_url: "https://your-anthropic-api.com/v1"
+    model: "custom-claude-model-name"
+    temperature: 1.0
+    max_tokens: 12800
+    max_context_tokens: 960000
+
+  gmn3_1p:  # Gemini 3.1 Pro Preview 模型配置示例
+    # Input:  $ 2($ 4)/1m tokens. (> 200k tokens context)
+    # Output: $12($18)/1m tokens. (> 200k tokens context)
+    api: "gemini"                  # API 类型: openai, anthropic, gemini
+    api_key: ${GEMINI_API_KEY:}
+    model: "gemini-3.1-pro-preview"
+    temperature: 1.0
+    max_tokens: 16384
+    max_context_tokens: 960000
+
+  gmn3f:  # Gemini 3 Flash Preview 模型配置示例
+    # Input:  $ 0.5/1m tokens.
+    # Output: $ 3.0/1m tokens.
+    api: "gemini"                  # API 类型: openai, anthropic, gemini
+    api_key: ${GEMINI_API_KEY:}
+    model: "gemini-3-flash-preview"
+    temperature: 1.0
+    max_tokens: 16384
+    max_context_tokens: 960000
+
+  gmn2_5p:  # Gemini 2.5 Pro 模型配置示例
+    # Input:  $ 1.25($ 2.50)/1m tokens. (> 200k tokens context)
+    # Output: $10.00($15.00)/1m tokens. (> 200k tokens context)
+    api: "gemini"                  # API 类型: openai, anthropic, gemini
+    api_key: ${GEMINI_API_KEY:}
+    model: "gemini-2.5-pro"
+    temperature: 1.0
+    max_tokens: 16384
+    max_context_tokens: 960000
+
+  gmn2_5f:  # Gemini 2.5 Flash 模型配置示例
+    # Input:  $ 0.3/1m tokens.
+    # Output: $ 2.5/1m tokens.
+    api: "gemini"                  # API 类型: openai, anthropic, gemini
+    api_key: ${GEMINI_API_KEY:}
+    model: "gemini-2.5-flash"
+    temperature: 1.0
+    max_tokens: 16384
+    max_context_tokens: 960000

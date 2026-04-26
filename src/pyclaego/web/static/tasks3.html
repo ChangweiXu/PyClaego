@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PyClaw-CC - 任务图谱仪表盘</title>
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/static/css/tasks3.css">
+</head>
+<body>
+    <div class="app">
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1>🧭 任务图谱仪表盘 <span class="badge">v3</span></h1>
+                <nav class="nav">
+                    <a href="/" class="nav-link">← 聊天</a>
+                    <a href="/tasks" class="nav-link">📋 任务详情 (v2)</a>
+                </nav>
+            </div>
+            <div class="topbar-right">
+                <span id="ws-status" class="status status-disconnected">未连接</span>
+                <button id="refresh-btn" title="刷新">🔄</button>
+            </div>
+        </header>
+
+        <main class="layout">
+            <!-- 左：sessions -->
+            <aside class="pane pane-sessions">
+                <div class="pane-header">
+                    <span>Sessions</span>
+                    <span class="counter" id="sessions-count">0</span>
+                </div>
+                <ul id="session-list" class="list session-list">
+                    <li class="empty">连接中...</li>
+                </ul>
+            </aside>
+
+            <!-- 中：turns -->
+            <section class="pane pane-turns">
+                <div class="pane-header">
+                    <span id="turns-title">Turns</span>
+                    <span class="counter" id="turns-count">0</span>
+                </div>
+                <ul id="turn-list" class="list turn-list">
+                    <li class="empty">选择左侧 session</li>
+                </ul>
+            </section>
+
+            <!-- 右：execution graph + detail -->
+            <section class="pane pane-graph">
+                <div class="pane-header">
+                    <span id="graph-title">Execution Graph</span>
+                </div>
+                <div class="graph-area" id="graph-area">
+                    <div class="empty">选择中间一个 turn</div>
+                </div>
+                <div class="detail-panel" id="detail-panel">
+                    <div class="empty">点击图中节点查看详情</div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/static/js/tasks3.js"></script>
+</body>
+</html>

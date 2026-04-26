@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PyClaw-CC - 任务详情仪表盘</title>
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/static/css/tasks2.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <div class="header-left">
+                <h1>📊 任务详情仪表盘</h1>
+                <nav class="nav-links">
+                    <a href="/" class="btn-link">← 聊天</a>
+                    <a href="/tasks" class="btn-link">📋 任务列表</a>
+                </nav>
+            </div>
+            <div class="header-right">
+                <div class="stats" id="stats">
+                    <span class="stat-item">
+                        <span class="stat-label">Session:</span>
+                        <span class="stat-value" id="stat-sessions">0</span>
+                    </span>
+                    <span class="stat-item">
+                        <span class="stat-label">任务:</span>
+                        <span class="stat-value" id="stat-tasks">0</span>
+                    </span>
+                </div>
+                <div class="status-group">
+                    <span class="status-label">状态:</span>
+                    <span id="ws-status" class="status status-disconnected">未连接</span>
+                    <button id="refresh-btn" class="btn-icon" title="刷新">🔄</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 过滤器 -->
+        <div class="filter-bar">
+            <label for="session-filter">Session:</label>
+            <select id="session-filter">
+                <option value="">全部</option>
+            </select>
+            <label for="status-filter">状态:</label>
+            <select id="status-filter">
+                <option value="">全部</option>
+                <option value="pending">⏳ 等待中</option>
+                <option value="running">🔄 运行中</option>
+                <option value="completed">✅ 已完成</option>
+                <option value="failed">❌ 失败</option>
+                <option value="cancelled">🚫 已取消</option>
+            </select>
+            <label for="type-filter">类型:</label>
+            <select id="type-filter">
+                <option value="">全部</option>
+                <option value="user_message">💬 用户消息</option>
+                <option value="agent_loop">🔁 Agent循环</option>
+                <option value="tool_execution">🔧 工具调用</option>
+                <option value="subagent_spawn">🧬 子Agent</option>
+                <option value="subagent_loop">🔄 子Agent循环</option>
+                <option value="llm_call">🤖 LLM调用</option>
+            </select>
+        </div>
+
+        <!-- 任务树容器 -->
+        <div id="task-tree" class="task-tree">
+            <div class="loading">正在连接任务管理器...</div>
+        </div>
+    </div>
+
+    <script src="/static/js/tasks2.js"></script>
+</body>
+</html>

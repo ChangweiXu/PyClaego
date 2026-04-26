@@ -1,0 +1,98 @@
+[project]
+name = "pyclaego"
+version = "1.0.0"
+description = "PyClaego: a session-based AI agent framework with persistent memory, WebSocket scheduler, and pluggable context handlers"
+authors = [
+    { name = "pyclaego contributors" }
+]
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = ">=3.10"
+keywords = [
+    "ai", "agent", "llm", "memory", "session",
+    "anthropic", "openai", "gemini", "websocket",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+]
+dependencies = [
+    "websockets>=13.0,<16.0",
+    "PyYAML>=6.0.1,<7.0.0",
+    "openai>=2.30.0,<3.0.0",
+    "anthropic>=0.89.0,<1.0.0",
+    "google-genai>=1.72.0,<2.0.0",
+    "aiohttp>=3.13.5,<4.0.0",
+    "httpx[http2]>=0.28.1,<1.0.0",
+    "beautifulsoup4>=4.12.2,<5.0.0",
+    "jieba>=0.42.1",
+    "lark-oapi>=1.3.0,<2.0.0",
+    "fastapi>=0.104.0,<1.0.0",
+    "uvicorn[standard]>=0.24.0,<1.0.0",
+    "filelock>=3.25.2,<4.0.0",
+    "apscheduler>=3.10,<4",
+    "tiktoken>=0.11.0",
+]
+
+[project.urls]
+Repository = "https://github.com/pyclaego/pyclaego"
+Documentation = "https://github.com/pyclaego/pyclaego/blob/main/README.md"
+Changelog = "https://github.com/pyclaego/pyclaego/blob/main/CHANGELOG.md"
+
+[project.optional-dependencies]
+tui = [
+    "textual>=0.47.0,<9.0.0",
+]
+
+# NOTE: Entry point scripts (core_server.py / web_server.py / tui_client.py /
+# feishu_gateway.py) live at the project root and are installed as py-modules.
+# After `pip install -e .` the commands pyclaego-server / pyclaego-tui /
+# pyclaego-feishu are available from any working directory.
+
+[project.scripts]
+pyclaego-server = "core_server:run"
+pyclaego-tui    = "tui_client:run"
+pyclaego-feishu = "feishu_gateway:run"
+
+[build-system]
+requires = ["setuptools>=68.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+# Package layout: src/pyclaego/ contains the installable package.
+# Root-level entry point scripts are included as py-modules so that
+# `pip install` wires up the console scripts above.
+[tool.setuptools]
+py-modules = ["core_server", "tui_client", "feishu_gateway", "web_server"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["pyclaego*"]
+exclude = ["docs*", "_output*", "workspaces*", ".cache*", ".logs*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = false
+ignore_missing_imports = true
+warn_unused_ignores = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v"
