@@ -27,7 +27,8 @@ Directory layout created
   .memory/soul_v6/       — SoulV6 memory store
   workspaces/            — per-session working directories
   .cache/                — misc runtime caches (e.g. feishu session map)
-  skills/builtin/        — built-in skill files
+  skills/builtin/        — built-in skill files (copied from repo skills/builtin/)
+  skills/session_created/ — session-created skill files (copied from repo skills/session_created/)
 """
 
 import re
@@ -60,8 +61,9 @@ DATA_DIRS: list[str] = [
     ".memory/soul_v6",
     "workspaces",
     ".cache",
-    "skills/builtin",
 ]
+
+SKILLS_SRC: str = "skills"
 
 
 def _copy_files() -> None:
@@ -124,6 +126,25 @@ def _create_data_dirs() -> None:
             print(f"  [mkdir] .pyclaego/{d}/")
 
 
+def _copy_skills() -> None:
+    src_root = HERE / SKILLS_SRC
+    if not src_root.exists():
+        print(f"  [warn]  skills/ directory not found at {src_root} — skipping")
+        return
+
+    for src_file in sorted(src_root.rglob("*")):
+        if not src_file.is_file():
+            continue
+        rel = src_file.relative_to(HERE)
+        dest = ROOT / rel
+        if dest.exists():
+            print(f"  [skip]  {rel}  (already exists)")
+            continue
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src_file, dest)
+        print(f"  [copy]  {rel}")
+
+
 def main() -> None:
     print("PyClaego Bootstrap")
     print(f"  Root : {ROOT}")
@@ -139,6 +160,10 @@ def main() -> None:
 
     print(f"Creating data directories under {ROOT} ...")
     _create_data_dirs()
+    print()
+
+    print(f"Copying skills to {ROOT}/skills/ ...")
+    _copy_skills()
 
     print()
     print("Done.  Next steps:")

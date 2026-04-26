@@ -39,6 +39,7 @@ dependencies = [
     "filelock>=3.25.2,<4.0.0",
     "apscheduler>=3.10,<4",
     "tiktoken>=0.11.0",
+    "aiosqlite>=0.19.0,<1.0.0",
 ]
 
 [project.urls]
@@ -57,19 +58,18 @@ tui = [
 # pyclaego-feishu are available from any working directory.
 
 [project.scripts]
-pyclaego-server = "core_server:run"
-pyclaego-tui    = "tui_client:run"
-pyclaego-feishu = "feishu_gateway:run"
+pyclaego-server = "pyclaego._server:run"
+pyclaego-tui    = "pyclaego._tui:run"
+pyclaego-feishu = "pyclaego._feishu:run"
+pyclaego-web    = "pyclaego._web:main"
 
 [build-system]
 requires = ["setuptools>=68.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 # Package layout: src/pyclaego/ contains the installable package.
-# Root-level entry point scripts are included as py-modules so that
-# `pip install` wires up the console scripts above.
+# Entry-point scripts live inside src/pyclaego/ and are wired up via [project.scripts].
 [tool.setuptools]
-py-modules = ["core_server", "tui_client", "feishu_gateway", "web_server"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

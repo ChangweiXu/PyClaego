@@ -24,12 +24,6 @@
 
 import asyncio
 import sys
-import os
-
-# 确保可以 import pyclaego/src 下的模块（以 pyclaego 目录为工作目录时）
-_pkg_dir = os.path.dirname(os.path.abspath(__file__))
-if _pkg_dir not in sys.path:
-    sys.path.insert(0, _pkg_dir)
 
 from pyclaego.message.feishu_client import FeishuClient
 from pyclaego.message.feishu_gateway import FeishuGateway
