@@ -27,7 +27,6 @@ class ChatClient {
         this.sidebar = document.getElementById('sidebar');
         this.sessionList = document.getElementById('session-list');
         this.refreshSessionsBtn = document.getElementById('refresh-sessions-btn');
-        this.toggleSidebarBtn = document.getElementById('toggle-sidebar-btn');
         this.showSidebarBtn = document.getElementById('show-sidebar-btn');
         
         // 滚动到底部按钮
@@ -120,7 +119,6 @@ class ChatClient {
         
         // 侧边栏控制
         this.refreshSessionsBtn.addEventListener('click', () => this.loadSessions());
-        this.toggleSidebarBtn.addEventListener('click', () => this.toggleSidebar());
         this.showSidebarBtn.addEventListener('click', () => this.showSidebar());
         
         // 滚动到底部按钮
@@ -271,9 +269,6 @@ class ChatClient {
      */
     toggleSidebar() {
         this.sidebar.classList.toggle('hidden');
-        this.toggleSidebarBtn.textContent = this.sidebar.classList.contains('hidden') 
-            ? '▶ 显示' 
-            : '◀ 隐藏';
     }
     
     /**
@@ -281,7 +276,6 @@ class ChatClient {
      */
     showSidebar() {
         this.sidebar.classList.remove('hidden');
-        this.toggleSidebarBtn.textContent = '◀ 隐藏';
     }
     
     /**
@@ -1047,7 +1041,7 @@ class ChatClient {
 
 // 页面加载完成后初始化
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('PyClaw-CC Chat Client (Enhanced) initializing...');
+    console.log('PyClaego Chat Client (Enhanced) initializing...');
     window.chatClient = new ChatClient();
     console.log('Chat client ready with Markdown, code highlighting, and session management!');
 });
