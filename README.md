@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/pyclaego_logo.png" alt="PyClaego Logo" width="200" />
+</p>
+
 # PyClaego
 
 **中心化 Agent 管理系统 — WebSocket 架构的智能对话平台**
