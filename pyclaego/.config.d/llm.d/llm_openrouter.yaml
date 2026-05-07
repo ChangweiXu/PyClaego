@@ -1,0 +1,36 @@
+
+or_gpt5_5:  # OpenRouter GPT-5.5 模型配置示例
+  api: "openai"                  # API 类型: openai, anthropic, gemini
+  api_key: ${OPEN_ROUTER_API_KEY:}
+  base_url: "https://openrouter.ai/api/v1"
+  model: "openai/gpt-5.5"
+  temperature: 1.0
+  max_tokens: 32772
+  max_context_tokens: 960000
+  extra_body:
+    reasoning:
+      enabled: true
+
+or_claude_opus4_7:  # OpenRouter Claude Opus 4.7 模型配置示例
+  api: "openai"                  # API 类型: openai, anthropic, gemini
+  api_key: ${OPEN_ROUTER_API_KEY:}
+  base_url: "https://openrouter.ai/api/v1"
+  model: "anthropic/claude-opus-4.7"
+  temperature: 1.0
+  max_tokens: 32772
+  max_context_tokens: 960000
+  extra_body:
+    reasoning:
+      enabled: true
+
+or_claude_sonnet4_6:  # OpenRouter Claude Sonnet 4.6 模型配置示例
+  api: "openai"                  # API 类型: openai, anthropic, gemini
+  api_key: ${OPEN_ROUTER_API_KEY:}
+  base_url: "https://openrouter.ai/api/v1"
+  model: "anthropic/claude-sonnet-4.6"
+  temperature: 1.0
+  max_tokens: 32772
+  max_context_tokens: 960000
+  extra_body:
+    reasoning:
+      enabled: true

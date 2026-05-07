@@ -1,0 +1,110 @@
+{
+  "//": [
+    "Widget manifest 示例（widget.json）。",
+    "",
+    "用法：复制本文件到",
+    "  <personal_space.root_path>/<ps_id>/widgets/<widget_id>/widget.json",
+    "例：",
+    "  ~/pyclaego/personal_spaces/alice/widgets/w_chat_default/widget.json",
+    "",
+    "注意：本文件是 widget 的元数据 manifest，与 widget.config.json（配置层）分开。",
+    "  widget.json       — widget_id、title、layout、cron 定时任务等 manifest 数据",
+    "  widget.config.json — agent、context、tools 等配置覆盖（不含 cron）",
+    "",
+    "cron[] 数组由 WidgetCronScheduler 在服务启动时扫描并注册到 APScheduler。",
+    "修改 cron[] 后需重启后端，或用 /cron pause|resume|run <id> 动态操作。"
+  ],
+
+  "widget_id": "w_chat_default",
+  "widget_class": "chat",
+  "title": "主对话窗口",
+  "layout": {
+    "x": 0,
+    "y": 0,
+    "w": 6,
+    "h": 4
+  },
+  "metadata": {},
+
+  "cron": [
+    {
+      "//": [
+        "cron 字段说明：",
+        "  id               — 全局唯一标识符，用于 /cron pause|resume|run <id>",
+        "                     缺省时自动生成 cr_00、cr_01 …（不推荐）",
+        "  schedule         — 标准 5 段 cron 语法：分 时 日 月 周",
+        "  interval_seconds — 与 schedule 二选一，每 N 秒触发一次（调试用）",
+        "  prompt           — 触发时发给本 widget agent 的消息内容",
+        "  enabled          — false 时跳过注册；可用 /cron resume <id> 动态开启",
+        "  timezone         — IANA 时区，如 Asia/Shanghai、UTC（可选，默认系统时区）",
+        "  user_id          — 触发时的归属用户标识（默认 cron）",
+        "  params           — 注入 prompt 模板的变量字典，支持 {key} 占位符"
+      ]
+    },
+
+    {
+      "//": "示例 1：每日早报 — 每天 08:00 抓取 HuggingFace 论文摘要",
+      "id": "morning_paper_brief",
+      "schedule": "0 8 * * *",
+      "timezone": "Asia/Shanghai",
+      "prompt": "抓取昨天的 HuggingFace Daily Papers 论文列表，生成简短摘要。",
+      "enabled": true
+    },
+
+    {
+      "//": "示例 2：每小时天气提醒 — 工作日 09:00–18:00 每整点（默认关闭）",
+      "id": "hourly_weather_ping",
+      "schedule": "0 9-18 * * 1-5",
+      "timezone": "Asia/Shanghai",
+      "prompt": "请简要汇报当前北京的天气情况。",
+      "enabled": false
+    },
+
+    {
+      "//": "示例 3：每日活动提醒 — 08:00–22:00 每 2 小时播报户外活动指数",
+      "id": "hourly_activity_reminder",
+      "schedule": "0 8-22/2 * * *",
+      "timezone": "Asia/Shanghai",
+      "prompt": "抓取现在北京的户外活动指数：天气状况、温度范围、风力等级、紫外线等级、AQI。根据指数给出简短的户外活动建议。",
+      "enabled": true
+    },
+
+    {
+      "//": "示例 4：每日晚报 — 每天 20:00 汇总国际新闻",
+      "id": "evening_news_brief",
+      "schedule": "0 20 * * *",
+      "timezone": "Asia/Shanghai",
+      "prompt": "抓取过去一天的国际新闻，生成简短摘要（每条新闻 2~3 行），并标注来源和发布时间。",
+      "enabled": true
+    },
+
+    {
+      "//": "示例 5：每日科技新闻 — 每天 14:00 播报科技要闻",
+      "id": "daily_tech_news_brief",
+      "schedule": "0 14 * * *",
+      "timezone": "Asia/Shanghai",
+      "prompt": "请简要汇报过去一天内科技领域最值得关注的新闻（最多 10 条，来源标注）。",
+      "enabled": true
+    },
+
+    {
+      "//": "示例 6：带参数模板 — params 中的变量替换 prompt 里的 {city} 占位符",
+      "id": "weather_with_params",
+      "schedule": "0 9 * * *",
+      "timezone": "Asia/Shanghai",
+      "prompt": "请汇报今天 {city} 的天气情况，并给出穿衣建议。",
+      "params": {
+        "city": "上海"
+      },
+      "enabled": false
+    },
+
+    {
+      "//": "示例 7：interval 模式 — 每 300 秒触发一次（调试用，确认管道正常后应关闭）",
+      "id": "debug_heartbeat",
+      "interval_seconds": 300,
+      "prompt": "回复：heartbeat OK",
+      "enabled": false
+    }
+  ]
+}

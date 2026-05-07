@@ -21,12 +21,20 @@ wheels/
 *.egg
 .pytest*
 .ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# uv
+.venv
+uv.lock
+.uv/
 
 # Virtual Environment
 venv/
 env/
 ENV/
-.venv
 
 # IDE
 .vscode/
@@ -41,8 +49,9 @@ logs/
 *.log
 .cache
 
-# Workspaces
+# Workspaces (runtime-generated, not for VCS)
 workspaces/
+archive/
 
 # Config
 config/local.yaml
@@ -51,9 +60,3 @@ config/local.yaml
 # OS
 .DS_Store
 Thumbs.db
-
-config.yaml
-.env
-
-workspaces/
-test_workspaces/

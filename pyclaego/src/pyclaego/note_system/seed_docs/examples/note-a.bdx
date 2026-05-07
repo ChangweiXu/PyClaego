@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bdx:doc xmlns:bdx="https://pyclaego.local/bdx/v1">
+  <bdx:meta>
+    <bdx:title>Example Note A</bdx:title>
+  </bdx:meta>
+  <bdx:body>
+    <bdx:block type="heading" level="1" id="b_na01">
+      <bdx:content><![CDATA[Example Note A]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="paragraph" id="b_na02">
+      <bdx:content><![CDATA[This note demonstrates cross-note linking. It links to ]]></bdx:content>
+      <bdx:link target="note-b.bdx" anchor="" display="Example Note B"/>
+      <bdx:content><![CDATA[ in the same folder.]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="heading" level="2" id="b_na03">
+      <bdx:content><![CDATA[Tags]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="paragraph" id="b_na04">
+      <bdx:content><![CDATA[Inline tags are rendered as chips: ]]></bdx:content>
+      <bdx:tag name="example"/>
+      <bdx:content><![CDATA[ ]]></bdx:content>
+      <bdx:tag name="demo"/>
+    </bdx:block>
+    <bdx:block type="heading" level="2" id="b_na05">
+      <bdx:content><![CDATA[Code Block]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="code" lang="python" id="b_na06">
+      <bdx:content><![CDATA[def greet(name: str) -> str:
+    return f"Hello, {name}!"
+
+print(greet("World"))]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="heading" level="2" id="b_na07">
+      <bdx:content><![CDATA[Quote]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="quote" id="b_na08">
+      <bdx:content><![CDATA[The best tool is the one you will actually use.]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="divider" id="b_na09"/>
+    <bdx:block type="paragraph" id="b_na10">
+      <bdx:content><![CDATA[See also: ]]></bdx:content>
+      <bdx:link target="note-b.bdx" anchor="" display="Example Note B"/>
+      <bdx:content><![CDATA[ | ]]></bdx:content>
+      <bdx:link target="../getting-started.bdx" anchor="" display="Getting Started"/>
+    </bdx:block>
+  </bdx:body>
+</bdx:doc>

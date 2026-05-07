@@ -1,0 +1,20 @@
+{
+    "class_id": "chat",
+    "title": "Chat",
+    "description": "自由对话 widget — 复刻经典 chat session 的体验。每个新建 PS 默认自动注入一个该类型的 widget。",
+    "defaults": {},
+    "config_schema": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+            "agent": {
+                "type": "object",
+                "description": "覆盖该 widget 使用的 agent 配置（与全局 agent 配置同结构）。"
+            },
+            "context": {
+                "type": "object",
+                "description": "覆盖该 widget 使用的 context 配置。"
+            }
+        }
+    }
+}

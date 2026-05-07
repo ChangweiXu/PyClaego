@@ -1,0 +1,50 @@
+# 本地 LLM Router 代理 — llm.yaml 内联 provider 及其他杂项
+#
+# 这些 provider 对应 llm.yaml 中内联定义（不在 llm.d/ 中）的模型，
+# 以及原 local_router.yaml 已有的模型。
+# model 值必须与 llm_router.yaml 中对应 upstream 的 alias 完全一致。
+
+locr_kimi_code:  # Kimi Code (Anthropic 协议) → 本地代理
+  api: "kimi_anthropic"
+  api_key: "local_router_no_key_needed"
+  base_url: "http://127.0.0.1:18790"
+  model: "kimi_code"               # llm_router.yaml kimi-code upstream alias
+  temperature: 0.7
+  max_tokens: 8192
+  max_context_tokens: 262144
+  extra_body:
+    thinking:
+      type: "enabled"              # 思考过程记录：enabled, disabled
+
+locr_kimi_code_oai:  # Kimi Code (OpenAI 协议) → 本地代理
+  api: "openai"
+  api_key: "local_router_no_key_needed"
+  base_url: "http://127.0.0.1:18790/v1"
+  model: "kimi_code_oai"           # llm_router.yaml kimi-code-oai upstream alias
+  temperature: 0.7
+  max_tokens: 8192
+  max_context_tokens: 262144
+  extra_body:
+    thinking:
+      type: "enabled"              # 思考过程记录：enabled, disabled
+
+locr_moonshot_kimi:  # Moonshot Kimi K2.6 (OpenAI 协议) → 本地代理
+  api: "openai"
+  api_key: "local_router_no_key_needed"
+  base_url: "http://127.0.0.1:18790/v1"
+  model: "moonshot_kimi"           # llm_router.yaml moonshot upstream alias
+  temperature: 1.0
+  max_tokens: 8192
+  max_context_tokens: 262144
+  extra_body:
+    thinking:
+      type: "enabled"              # 思考过程记录：enabled, disabled
+
+locr_glm5_1:  # 智谱 GLM-5.1 (OpenAI 协议) → 本地代理
+  api: "openai"
+  api_key: "local_router_no_key_needed"
+  base_url: "http://127.0.0.1:18790/v1"
+  model: "glm5_1"                  # llm_router.yaml zhipu upstream alias
+  temperature: 1.0
+  max_tokens: 8192
+  max_context_tokens: 196608

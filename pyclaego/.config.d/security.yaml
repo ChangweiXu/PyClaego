@@ -1,0 +1,186 @@
+enabled: false                         # 是否启用安全审查
+log_enabled: true                      # 是否记录安全事件日志
+log_root: "@{logging.log_root}"        # 安全事件日志目录，默认与 logging.log_root 相同
+event_buffer_size: 1000                # 内存事件缓冲大小（超过后环形覆盖）
+
+# 安全规则列表
+#
+# 全部规则默认 enabled: false，按需打开。
+# 规则命中优先级：deny > warn > allow（遇到 deny 立即短路）。
+rules:
+
+  # ─────────────────────────────────────────────────────────────
+  # LLM 智能 Bash 命令安全审查（原始 bash 字符串）
+  # ─────────────────────────────────────────────────────────────
+  - rule_type: "llm_bash_review"
+    rule_id: "llm_bash_security_review"
+    enabled: false
+    request_types: ["tool_call"]
+    action: "warn"
+    llm_id: "@{llm.default_provider}"
+    timeout: 30
+    fallback_action: "warn"
+    deny_on_deny: false
+    include_review_in_reason: true
+    query_timeout_s: 60
+
+  # ─────────────────────────────────────────────────────────────
+  # LLM 智能 SafeBash 命令树审查（结构化输入）
+  # ─────────────────────────────────────────────────────────────
+  - rule_type: "llm_safe_bash_review"
+    rule_id: "llm_safe_bash_security_review"
+    enabled: false
+    request_types: ["tool_call"]
+    action: "warn"
+    llm_id: "@{llm.default_provider}"
+    timeout: 30
+    fallback_action: "warn"
+    deny_on_deny: false
+    include_review_in_reason: true
+    query_timeout_s: 60
+
+  # ─────────────────────────────────────────────────────────────
+  # LLM 智能 Python 代码安全审查（python_exec 工具）
+  # ─────────────────────────────────────────────────────────────
+  - rule_type: "llm_python_review"
+    rule_id: "llm_python_security_review"
+    enabled: false
+    request_types: ["tool_call"]
+    action: "warn"
+    llm_id: "@{llm.default_provider}"
+    timeout: 30
+    fallback_action: "warn"
+    deny_on_deny: false
+    include_review_in_reason: true
+    query_timeout_s: 60
+
+  # ─────────────────────────────────────────────────────────────
+  # LLM 智能 SafePython 代码安全审查（safe_python 工具）
+  # ─────────────────────────────────────────────────────────────
+  - rule_type: "llm_safe_python_review"
+    rule_id: "llm_safe_python_security_review"
+    enabled: false
+    request_types: ["tool_call"]
+    action: "warn"
+    llm_id: "@{llm.default_provider}"
+    timeout: 30
+    fallback_action: "warn"
+    deny_on_deny: false
+    include_review_in_reason: true
+    query_timeout_s: 60
+
+  # ─────────────────────────────────────────────────────────────
+  # 工作目录路径限制（widget 迁移阶段已禁用 — 等 widget.workspace_dir 模型替代后再启用）
+  # ─────────────────────────────────────────────────────────────
+  # - rule_type: "workspace_path"
+  #   rule_id: "subagent_workspace_restriction"
+  #   enabled: false
+  #   request_types: ["tool_call"]
+  #   action: "deny"
+  #   restricted_tools: []
+  #   allow_project_root: true
+  #   allow_project_writes: false
+  #   public_paths:
+  #     - "/tmp"
+  #     - "~/pyclaego/.cache"
+  #     - "~/pyclaego/skills"
+
+  # ─────────────────────────────────────────────────────────────
+  # 工具调用循环检测（防止 Agent 卡死在同一工具调用）
+  # ─────────────────────────────────────────────────────────────
+  - rule_type: "tool_call_loop_detector"
+    rule_id: "tool_loop_detector"
+    enabled: false
+    request_types: ["tool_call"]
+    action: "warn"
+    threshold: 3                        # 连续相同调用 ≥ 该值则触发
+    window: 10                          # 历史窗口大小
+
+  # ─────────────────────────────────────────────────────────────
+  # 速率限制（每会话滑动窗口）
+  # ─────────────────────────────────────────────────────────────
+  - rule_type: "rate_limit"
+    rule_id: "per_session_rate_limit"
+    enabled: false
+    request_types: ["tool_call", "llm_call"]
+    action: "deny"
+    tool_calls_per_min: 60
+    llm_calls_per_min: 30
+    tool_calls_per_hour: 600
+    llm_calls_per_hour: 300
+
+  # ─────────────────────────────────────────────────────────────
+  # 成本预算（依赖 after_llm_call 传入 usage）
+  # ─────────────────────────────────────────────────────────────
+  - rule_type: "cost_budget"
+    rule_id: "session_cost_budget"
+    enabled: false
+    request_types: ["llm_call"]
+    action: "deny"
+    max_total_tokens: 500000
+    max_input_tokens: 0
+    max_output_tokens: 0
+    max_usd: 0.0
+    # pricing:
+    #   kimi_code:
+    #     input_per_1k: 0.0015
+    #     output_per_1k: 0.003
+
+  # ─────────────────────────────────────────────────────────────
+  # 网络出口过滤（SSRF / metadata endpoint / 内网 CIDR）
+  # ─────────────────────────────────────────────────────────────
+  - rule_type: "network_egress"
+    rule_id: "network_egress_filter"
+    enabled: false
+    request_types: ["tool_call"]
+    action: "deny"
+    tool_names:
+      - "web_fetch"
+      - "web_fetch_v2"
+      - "web_search"
+      - "download_file"
+    block_private_networks: true
+    denied_hosts:
+      - "169.254.169.254"
+      - ".internal"
+      - ".local"
+    denied_cidrs: []                    # block_private_networks 已包含常见内网
+    allowed_hosts: []                   # 非空时进入白名单模式
+
+  # ─────────────────────────────────────────────────────────────
+  # 密钥/凭证出口扫描
+  # ─────────────────────────────────────────────────────────────
+  - rule_type: "secret_egress"
+    rule_id: "secret_egress_scan"
+    enabled: false
+    request_types: ["tool_call"]
+    action: "deny"
+    tool_names:
+      - "web_fetch"
+      - "web_fetch_v2"
+      - "download_file"
+      - "write_file"
+      - "file_edit"
+    extra_patterns: []
+
+  # ─────────────────────────────────────────────────────────────
+  # Subagent 递归深度 / 总数限制
+  # ─────────────────────────────────────────────────────────────
+  - rule_type: "subagent_depth"
+    rule_id: "subagent_depth_limit"
+    enabled: false
+    request_types: ["tool_call"]
+    action: "deny"
+    max_depth: 3
+    max_total_subagents_per_session: 20
+
+  # ─────────────────────────────────────────────────────────────
+  # 文件大小限制
+  # ─────────────────────────────────────────────────────────────
+  - rule_type: "file_size"
+    rule_id: "file_size_limit"
+    enabled: false
+    request_types: ["tool_call"]
+    action: "deny"
+    max_read_bytes: 5242880             # 5 MiB
+    max_write_bytes: 2097152            # 2 MiB

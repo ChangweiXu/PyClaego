@@ -1,0 +1,202 @@
+# Agent 和 Context 的全局默认配置，位于 .config.d/agent_context.yaml
+# 本配置的所有字段均可在 PS 的 personal_space.config.json 中覆盖（覆盖后对该 PS 内所有 Widget 生效）
+# 也可在 PS 中的 widget.config.json 中覆盖（覆盖后仅对该 Widget 生效）
+
+# Agent 配置（PS 中的 Widget Agent 会继承此处配置，并可在 widget.config.json 中覆盖）
+agent:
+  type: "pipeline"                # Agent 策略类型：echo, simple, spawn, pipeline
+  llm: "@{llm.default_provider}"
+  use_tools: true                 # 是否启用工具调用（simple/spawn 有效，echo 固定 false）
+
+  pipeline:
+    max_tool_rounds: 55           # 整体对话的最大轮次（包含主 Agent 和所有子 Agent 的工具调用轮次总和）
+    max_concurrent_subagents: 5   # 子 Agent 并发上限（>0 启用 PipelineAgent 的 spawn 能力）
+
+# Context 配置（PS 中的 Widget Context 会继承此处配置，并可在 widget.config.json 中覆盖）
+context:
+  type: "pipeline_window"         # Context 策略类型：simple, window, soul_v5, soul_v6, pipeline_window
+
+  pipeline_window:
+    keep_groups: 15               # 与 window 策略相同，保留最近 N 组问答
+
+  # ── SimpleV3 策略配置 ────────────────────────────────────────
+  # 三区预算模型（scratch / summary / verbatim）+ LLM 驱动压缩
+  simple_v3:
+    keep_groups: 20                # 滑动窗口最大保留组数
+    token_budget: 131072           # M: 总上下文窗口（需 ≤ LLM provider 的 max_context_tokens）
+
+    # 五比率预算模型（占比 usable_budget = M - system_prompt_tokens）
+    budget_ratios:
+      scratch: 0.10                # scratch（工作草稿）硬上限
+      summary: 0.20                # summary（历史摘要）硬上限
+      before_loop: 0.75            # 初始加载填充目标（scratch + summary + verbatim）
+      warning: 0.85                # 超过此比率 → 触发 llm_mini 智能压缩
+      critical: 0.95               # 超过此比率 → 强制丢弃最老 groups
+
+    # LLM 压缩与摘要（使用轻量模型以降低延迟和成本）
+    compress:
+      llm_id: "@{llm.default_provider}"    # 压缩/摘要专用 LLM provider ID
+      max_tokens: 50000            # llm_mini 单次调用的 max_tokens
+      timeout_s: 8.0               # 单次 llm_mini 调用超时（秒）
+
+    # 工作草稿（scratch）配置
+    scratch:
+      min_turn_tokens_for_update: 200  # 本轮 assistant 回复 < 此值 → 跳过 scratch 更新
+      max_tokens: 6000             # scratch 硬上限 tokens（超出则截断）
+
+    # 公共内容卸载存储
+    offload:
+      workspace_subdir: ".offload"   # 卸载内容的存储子目录（相对于 workspace）
+
+    # 状态持久化（派生缓存，可从 history 重建）
+    state:
+      state_dirname: ".simple_v3"    # 状态文件目录名
+      state_filename: "state.json"   # 状态文件名
+
+# 子 Agent 的上下文配置，与 context 合并后传入子 Agent 上下文初始化
+# (PS 中的子 Agent 会继承此处配置，并可在 widget.config.json 中覆盖)
+context_subagents:
+  # 子 Agent 上下文类型：和子 Agent 类型一致，由 Agent 决定后自动传入
+  #   echo, info_gatherer
+  type: "echo"
+
+  # ── SubAgentSoulV6 专属配置（use_soulv6: true 时生效）────────────────────
+  soul_v6_subagent:
+
+    # 工具结果落盘存储（大输出溢出到磁盘，防止上下文爆炸）
+    artifact_store:
+      spill_token_threshold: 2000     # 超过此 token 数的工具输出落盘
+      head_chars: 1000                # 落盘后在消息中保留的头部预览字符数
+      tail_chars: 500                 # 落盘后在消息中保留的尾部预览字符数
+
+    # 过时驱逐器（对早期轮次的工具结果进行 KEEP / SUMMARIZE / DROP）
+    stale_evictor:
+      keep_recent_turns: 2            # 最近 N 轮的工具结果无条件保留
+      summarize_tokens_threshold: 1000  # 超过此值 → 改写为摘要（头部截断）
+      drop_tokens_threshold: 4000     # 超过此值 → 直接丢弃
+      head_chars_summary: 400         # 改写为摘要时保留的头部字符数
+
+    # ── SubAgentSoulV6 专属配置（use_soulv6: true 时生效）────────────────────
+    # Token 预算分配器（4 个 tenant，可全部省略则使用默认值）
+    budget: {}
+      # tenants 配置完全可选；省略则使用内置 DEFAULT_TENANTS
+      # tenants:
+      #   - name: system
+      #     min_tokens: 2000
+      #     max_tokens: 8000
+      #     priority: 100
+      #   - name: current_tool_results
+      #     min_tokens: 2000
+      #     max_tokens: 30000
+      #     priority: 90
+      #   - name: history_verbatim
+      #     min_tokens: 1000
+      #     max_tokens: 15000
+      #     priority: 80
+      #   - name: reserved_output
+      #     min_tokens: 2000
+      #     max_tokens: 8000
+      #     priority: 70
+
+  # ── SubAgentSummarizingContextHandler 专属配置 ────────────────────────────
+  summarizing_subagent:
+    window_size: 128000                     # 上下文窗口大小（tokens）；与 LLM provider max_context_tokens 取较小值
+    compress_llm: "@{llm.default_provider}" # 冻结循环使用的 LLM provider ID
+    context_pressure_threshold: 0.80        # 触发冻结循环的上下文占用率阈值
+    tool_result_warn_tokens: 5000           # 工具结果 token 数 >= 此值时落盘并触发冻结循环
+    tool_result_truncate_tokens: 10000      # 工具结果 token 数 > 此值时 inline 截断（落盘保留完整内容）
+    max_frozen_iterations: 3                # 冻结循环最大迭代次数（每次 = 1次 LLM 调用）
+
+# 全局共享：磁盘、LLM、token 编码模型、压缩与召回策略
+context_global:
+  soul_v5_memory:
+    # 文件树根目录（MD 文件 + SQLite DB）
+    md_root: !join_path ["@{pyclaego.root_path}", ".memory", "soul_v5"]
+    # 索引数据库路径（默认在 md_root/_index.db）
+    db_path: !join_path ["@{pyclaego.root_path}", ".memory", "soul_v5", "_index.db"]
+    
+    # 压缩/摘要用 LLM（Phase 4 启用后使用）
+    llm_id: "@{llm.default_provider}"
+    
+    # tiktoken 编码模型（用于 token 计数）
+    tiktoken_model: "gpt-5"
+    
+    # Token 预算
+    token_budget:
+      context_window_cap: 65536   # 上下文窗口总容量
+      preference_cap: 2000        # 偏好文件 token 上限
+      experience_inject_cap: 8000 # experience 注入上限
+      topic_index_cap: 1500       # topic 索引注入上限
+      # ↓ 新增：加载历史时截断过长的工具输出
+      tool_content_truncation_threshold: 2000  # 超过此 token 数的工具输出将被截断
+      tool_content_head_chars: 1000            # 保留头部字符数
+      tool_content_tail_chars: 500             # 保留尾部字符数
+    
+    # 自动压缩阈值（Phase 4 启用后生效）
+    compression:
+      auto_group_threshold: 8     # 未索引 group 数达此值时触发自动压缩
+      group_compress_stop_at: 4   # 压缩 while 循环的退出条件（remaining < 此值时停止；默认为触发阈值的一半）
+      auto_case_threshold: 4      # 某 topic 下未索引 case 数达此阈值后触发 experience 提炼
+      max_exps_per_topic: 5       # 每个 topic 下活跃 experience 的上限（LLM 须合并/废弃超出部分）
+      cluster_token_budget: 12000 # 单次 synthesize_case 调用的 token 预算（贪婪装入 group 直到超限）
+
+    # 自动记忆召回（每轮对话开始时，根据用户消息自动检索相关记忆注入系统提示）
+    memory_recall:
+      enabled: true
+      token_budget: 4000            # 召回内容的 token 预算
+      methods:
+        jieba_kw_extr:
+          top_k: 5                  # jieba 提取关键词数量
+        fts_recall:
+          top_k: 15                 # FTS5 过量检索候选数
+          fts_threshold: -5.0       # FTS5 BM25 rank 过滤阈值（越接近 0 越相关）
+          priority_order:           # doc_type 加载优先级
+            - experience
+            - case
+        llm_rerank:
+          enabled: false            # MVP 阶段默认关闭
+          llm_id: ""                # 留空则使用 memory 的默认 llm_id
+          top_k: 5                  # rerank 后保留数量
+      workflow:                     # 激活的处理步骤（按顺序执行）
+        - jieba_kw_extr
+        - fts_recall
+
+  soul_v6_memory:
+    md_root: !join_path ["@{pyclaego.root_path}", ".memory", "soul_v6"]
+    db_path: !join_path ["@{pyclaego.root_path}", ".memory", "soul_v6", "_index.db"]
+
+    llm_id: "@{llm.default_provider}"     # 用于 brief 合成等内部 LLM 调用
+    tiktoken_model: "gpt-5"
+
+    token_budget:
+      context_window_cap: 131072          # 目标模型上下文窗口
+      preference_cap: 2000
+      experience_inject_cap: 8000
+      topic_index_cap: 1500
+      tool_content_truncation_threshold: 2000
+      tool_content_head_chars: 1000
+      tool_content_tail_chars: 500
+
+    compression:
+      auto_group_threshold: 8
+      group_compress_stop_at: 4
+      auto_case_threshold: 4
+      max_exps_per_topic: 5
+      cluster_token_budget: 12000
+
+    memory_recall:
+      enabled: true
+      token_budget: 4000
+      methods:
+        jieba_kw_extr: { top_k: 5 }
+        fts_recall:
+          top_k: 15
+          fts_threshold: -5.0
+          priority_order: [experience, case]
+        llm_rerank:
+          enabled: false
+          llm_id: ""
+          top_k: 5
+      workflow:
+        - jieba_kw_extr
+        - fts_recall

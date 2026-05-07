@@ -1,0 +1,206 @@
+# LLM Router 配置 — 本地 LLM 转发代理
+#
+# 启动方式：
+#   pyclaego-llm-router [--host H] [--port P]
+#
+# 行为：
+#   - 监听本地，接收 OpenAI / Anthropic / Gemini 三种协议格式的 REST 请求
+#   - 根据请求中的 model 字段，在路由表中查找上游 (upstream)
+#   - 仅替换 model / URL / 鉴权头，原样转发请求体（不做协议转换）
+#   - 流式 / 非流式 都支持，流式以原始字节透传
+#   - 每次调用落盘一份 JSON（已遮蔽凭证），并写一行 stats 到 SQLite
+
+server:
+  host: 127.0.0.1
+  port: 18790
+
+storage:
+  # 相对路径会落到 pyclaego.root_path 之下
+  call_dump_dir: !join_path ["@{pyclaego.root_path}", "llm_router", "calls"]
+  stats_db_path: !join_path ["@{pyclaego.root_path}", "llm_router", "stats.sqlite"]
+  dump_enabled: true
+  # 头/Body 中需要遮蔽的字段名（大小写不敏感）
+  mask_keys:
+    - api_key
+    - authorization
+    - x-api-key
+    - x-goog-api-key
+
+# 上游配置：每个 upstream 声明其协议、base_url、鉴权，以及暴露的模型别名
+# alias = 客户端在 model 字段中发送的值（与 llm.yaml providers 键名对齐）
+# upstream_model = 实际转发给上游的 model 值
+upstreams:
+
+  # ── OpenAI-compatible upstreams ───────────────────────────────────────────
+
+  - id: openrouter
+    protocol: openai
+    base_url: https://openrouter.ai/api/v1
+    api_key: ${OPEN_ROUTER_API_KEY:}
+    headers: {}
+    models:
+      - alias: or_gpt5_5
+        upstream_model: openai/gpt-5.5
+      - alias: or_claude_opus4_7
+        upstream_model: anthropic/claude-opus-4.7
+      - alias: or_claude_sonnet4_6
+        upstream_model: anthropic/claude-sonnet-4.6
+
+  - id: kimi-code-oai
+    protocol: openai
+    base_url: https://api.kimi.com/coding/v1
+    api_key: ${KIMI_CODE_API_KEY:}
+    headers: {}
+    models:
+      - alias: kimi_code_oai
+        upstream_model: k2p6
+
+  - id: moonshot
+    protocol: openai
+    base_url: https://api.moonshot.cn/v1
+    api_key: ${MOONSHOT_API_KEY:}
+    headers: {}
+    models:
+      - alias: moonshot_kimi
+        upstream_model: kimi-k2.6
+
+  - id: zhipu
+    protocol: openai
+    base_url: https://open.bigmodel.cn/api/paas/v4
+    api_key: ${ZHIPU_API_KEY:}
+    headers: {}
+    models:
+      - alias: glm5_1
+        upstream_model: glm-5.1
+
+  - id: alibl
+    protocol: openai
+    base_url: https://token-plan.cn-beijing.maas.aliyuncs.com/compatible-mode/v1
+    api_key: ${ALIBL_API_KEY:}
+    headers: {}
+    models:
+      - alias: ali_qwen3_6plus
+        upstream_model: qwen3.6-plus
+      - alias: ali_glm5
+        upstream_model: glm-5
+
+  - id: dashscope
+    protocol: openai
+    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    api_key: ${DASHSCOPE_API_KEY:}
+    headers: {}
+    models:
+      - alias: qwen3_30b_a3b
+        upstream_model: qwen3-30b-a3b
+
+  # - id: gpt
+  #   protocol: openai
+  #   base_url: https://your-openai-api.com/v1
+  #   api_key: ${GPT_API_KEY:}
+  #   headers: {}
+  #   models:
+  #     - alias: gpt5_4
+  #       upstream_model: custom-gpt-model-name
+
+  - id: deepseek
+    protocol: openai
+    base_url: https://api.deepseek.com
+    api_key: ${DEEPSEEK_API_KEY:}
+    headers: {}
+    models:
+      - alias: dpsk_v4p
+        upstream_model: deepseek-v4-pro
+      - alias: deepseek-v4-pro
+        upstream_model: deepseek-v4-pro  # 同一个模型，Anthropic 协议兼容层
+
+  # ── Anthropic-compatible upstreams ────────────────────────────────────────
+
+  # - id: claude
+  #   protocol: anthropic
+  #   base_url: https://your-anthropic-api.com/v1
+  #   api_key: ${CLAUDE_API_KEY:}
+  #   headers: {}
+  #   models:
+  #     - alias: clo4_7
+  #       upstream_model: custom-claude-model-name
+  #     - alias: cls4_6
+  #       upstream_model: custom-claude-model-name
+
+  - id: deepseek-ant
+    protocol: anthropic
+    base_url: https://api.deepseek.com/anthropic
+    api_key: ${DEEPSEEK_API_KEY:}
+    headers: {}
+    models:
+      - alias: dpsk_v4p_ant
+        upstream_model: deepseek-v4-pro
+
+  - id: alibl-ant
+    protocol: anthropic
+    base_url: https://token-plan.cn-beijing.maas.aliyuncs.com/apps/anthropic
+    api_key: ${ALIBL_API_KEY:}
+    headers: {}
+    models:
+      - alias: ali_qwen3_6plus_ant
+        upstream_model: qwen3.6-plus
+      - alias: ali_glm5_ant
+        upstream_model: glm-5
+
+  - id: kimi-code
+    protocol: anthropic
+    base_url: https://api.kimi.com/coding
+    api_key: ${KIMI_CODE_API_KEY:}
+    headers: {}
+    models:
+      - alias: kimi_code
+        upstream_model: k2p6
+
+  # ── Gemini upstreams ──────────────────────────────────────────────────────
+
+  - id: gemini
+    protocol: gemini
+    base_url: https://generativelanguage.googleapis.com
+    api_key: ${GEMINI_API_KEY:}
+    headers: {}
+    models:
+      - alias: gmn3_1p
+        upstream_model: gemini-3.1-pro-preview
+      - alias: gmn3f
+        upstream_model: gemini-3-flash-preview
+      - alias: gmn2_5p
+        upstream_model: gemini-2.5-pro
+      - alias: gmn2_5f
+        upstream_model: gemini-2.5-flash
+
+  # ── Gemini OpenAI-compatible upstreams ────────────────────────────────────
+
+  - id: gemini-oai
+    protocol: openai
+    base_url: https://generativelanguage.googleapis.com/v1beta/openai
+    api_key: ${GEMINI_API_KEY:}
+    headers: {}
+    models:
+      - alias: gmn3_1p_oai
+        upstream_model: gemini-3.1-pro-preview
+      - alias: gmn3f_oai
+        upstream_model: gemini-3-flash-preview
+      - alias: gmn2_5p_oai
+        upstream_model: gemini-2.5-pro
+      - alias: gmn2_5f_oai
+        upstream_model: gemini-2.5-flash
+
+  # ── Ollama upstreams (native protocol) ────────────────────────────────────
+  # Native Ollama API (/api/chat, /api/generate, /api/embed, /api/tags…).
+  # If you'd rather use Ollama's OpenAI-compatible shim, define an
+  # `openai`-protocol upstream pointing at http://host:11434/v1 instead.
+
+  # - id: ollama_local
+  #   protocol: ollama
+  #   base_url: http://127.0.0.1:11434
+  #   api_key: ""           # leave empty unless your proxy needs Bearer auth
+  #   headers: {}
+  #   models:
+  #     - alias: loc_llama3_1_8b
+  #       upstream_model: llama3.1:8b
+  #     - alias: loc_qwen2_5_7b
+  #       upstream_model: qwen2.5:7b

@@ -1,250 +1,122 @@
 # PyClaego
 
-**A session-based AI agent framework with persistent memory, concurrent subagents, and a pluggable context system.**
+**中心化 Agent 管理系统 — WebSocket 架构的智能对话平台**
 
-[![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
+[![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 ---
 
-## Overview
+## 你是否也在为这些问题头疼？
 
-PyClaego is a Python framework for building AI agents that:
-- Run tool-calling loops against any LLM (OpenAI, Anthropic, Gemini, DeepSeek, Kimi)
-- Maintain long-term memory across sessions via an MD-file + SQLite index (SoulV5/V6)
-- Spawn concurrent subagents for parallelisable sub-tasks
-- Expose sessions over WebSocket, REST, TUI, and Feishu (Lark) IM
+市面上的 Agent 框架看起来很美，用起来却处处掣肘：
 
----
-
-## Architecture
-
-```
-┌────────────────────────────────────────────────┐
-│               Entry Points                      │
-│  core_server.py  web_server.py  tui_client.py  │
-│  feishu_gateway.py                              │
-└────────────────┬───────────────────────────────┘
-                 │ WebSocket / HTTP
-┌────────────────▼───────────────────────────────┐
-│  CoreScheduler — session routing & broadcast   │
-│  SessionManager — lifecycle, persistence       │
-└────────────────┬───────────────────────────────┘
-                 │
-┌────────────────▼───────────────────────────────┐
-│  Session — message queue, slash commands, cron │
-│  ├─ SpawnAgent — tool loop + subagent dispatch │
-│  │   └─ SimpleAgent (internal base)            │
-│  ├─ ContextHandler (SoulV5 / SoulV6)           │
-│  │   ├─ MemoryManager + MemoryRecaller         │
-│  │   ├─ BudgetAllocator (V6)                   │
-│  │   └─ ToolResultStore / StaleEvictor (V6)    │
-│  └─ SecurityHandler                            │
-│      ├─ PathResolver ({{WORKSPACE}}, …)        │
-│      └─ Rules: bash / workspace / network /    │
-│               secret / subagent depth / …      │
-└────────────────┬───────────────────────────────┘
-                 │
-┌────────────────▼───────────────────────────────┐
-│  ToolManager — 20+ registered tools            │
-│  LLMClientFactory — 6 LLM providers            │
-│  TaskManager — task tree + streaming           │
-└────────────────────────────────────────────────┘
-```
-
-### Layer overview
-
-| Layer | Modules |
-|-------|---------|
-| Infrastructure | `config`, `logging` |
-| Capabilities | `llm`, `tool`, `skill`, `task_manager`, `message` |
-| Security & context | `security_executor`, `context` |
-| Agent & session | `agent`, `session` |
-| Entry points | `core`, `web` |
+- **又慢又烧钱**：主流 Agent 框架（OpenClaw, Hermes 等）在每次推理时都夹带大量冗余上下文，token 消耗居高不下，执行过程如同黑盒，出了问题根本无从追溯。
+- **任务堆积，互相阻塞**：SKILL 机制只能占用主 Agent 的执行循环，复杂任务必须排队串行，多任务并发？想都别想。
+- **经验沉淀难，Routing 开销大**：垂直领域的专业背景只能靠人工整理、塞进提示词，技能一旦叠加，还要额外承担路由决策的开销，越用越臃肿。
 
 ---
 
-## Quick Start
+## PyClaego 给你一个更好的答案
 
-### 1. Install
+我们重新定义了 Agent 系统应有的样子：
 
-**From source (recommended for development):**
-```bash
-python -m venv .venv && source .venv/bin/activate
-pip install -e ".[tui]"          # editable install with TUI client
-```
+- **执行过程 100% 可视化**：每一步推理、每一条工具调用，实时以消息流的形式推送到看板。Agent 在做什么，你比它自己更清楚。
+- **ToolAgent：超越 SKILL 的能力单元**：将完整工序蒸馏为独立的 ToolAgent，多个 ToolAgent 可以**同时并行运行**，彻底消除串行瓶颈，复杂任务不再等待。
+- **日志系统，让每一个细节都有迹可查**：详尽的执行日志完整记录推理链路，任何时刻都可回溯，复现问题、优化流程从此有据可依。
 
-After installing, three commands are available from **any directory**:
-```
-pyclaego-server   — core WebSocket scheduler
-pyclaego-tui      — TUI client (requires [tui] extra)
-pyclaego-feishu   — Feishu IM gateway
-```
+> 不只是一个 Agent 框架——PyClaego 是让 AI 真正为你所用的控制中心。
 
-**Runtime only (no TUI):**
-```bash
-pip install -e .
-# or
-pip install -r requirements.txt
-```
+---
 
-### 2. Bootstrap
+## 快速启动
+
+### 第一步：安装
+
+运行安装脚本，自动完成环境搭建、依赖安装与配置文件初始化：
 
 ```bash
-cd pyclaego/
-python bootstrap.py
+bash scripts/install.sh
 ```
 
-This creates `~/.pyclaego/` with config files and data directories, then prints
-the next steps. The script is idempotent — safe to run multiple times.
+脚本执行内容：
+1. 检测并安装 [uv](https://github.com/astral-sh/uv)（若未安装）
+2. 创建 `.venv` 虚拟环境并安装依赖
+3. 建立 `~/.pyclaego` 运行时目录树
+4. 复制配置模板与内置资源到 `~/.pyclaego`
 
-After bootstrapping, edit your API keys in `~/.pyclaego/.config.d/llm.yaml`.
+### 第二步：配置
 
-Minimal `~/.pyclaego/config.yaml` snippet:
+编辑 `~/.pyclaego/config.yaml`，填写必要的 API Key：
 
 ```yaml
-llm:
-  providers:
-    my_llm:
-      api: anthropic              # openai | anthropic | deepseek | gemini | kimi_anthropic
-      api_key: ${ANTHROPIC_API_KEY:}
-      model: claude-sonnet-4-5
-      max_context_tokens: 200000
-
-agent:
-  type: spawn
-  llm: my_llm
-  spawn:
-    max_concurrent_subagents: 3
-    max_tool_rounds: 20
-
-context:
-  type: soul_v6                   # soul_v5 | soul_v6
-  soul_v6:
-    keep_groups: 10
+# LLM API Key 示例（在 .config.d/llm.yaml 中配置）
+providers:
+  kimi_code:
+    api_key: "sk-your-api-key-here"
 ```
 
-### 3. Run
+> 也可以通过环境变量传入，例如 `export KIMI_CODE_API_KEY=sk-xxx`
+
+### 第三步：启动服务
+
+**启动 Core 后端服务**（WebSocket + Web API）：
 
 ```bash
-# Terminal 1 — core server
-pyclaego-server
-
-# Terminal 2 — TUI client
-pyclaego-tui
+bash scripts/start_core.sh
+# 或直接运行
+uv run pyclaego-core
 ```
 
-Alternatively, from the project root:
+服务默认监听：
+- WebSocket：`ws://127.0.0.1:18765`
+- Web API / Dashboard：`http://0.0.0.0:18888`
+
+**启动 Dashboard 前端**（开发模式）：
+
 ```bash
-cd pyclaego
-python -m core_server   # or: python core_server.py
-python -m tui_client    # or: python tui_client.py
+bash scripts/start_dashboard.sh
 ```
 
-### 4. Slash commands
-
-| Command | Description |
-|---------|-------------|
-| `/stop` | Cancel current task, clear queue |
-| `/help` | Show all commands |
-| `/compress` | Manually compress conversation history |
-| `/llm <id>` | Switch LLM provider at runtime |
-| `/cron` | Manage cron jobs |
-| `/pin` / `/unpin` | Pin/unpin a message (SoulV6) |
-| `/close_loop` | Close an open loop (SoulV6) |
-| `/memories` | List recent memories |
-| `/forget` | Delete a memory |
-| `/export_memory` | Export memory to file |
+首次运行会自动安装 npm 依赖，启动后访问终端输出的本地地址（通常为 `http://localhost:5173`）。
 
 ---
 
-## Project Structure
+## 目录结构
 
 ```
-pyclaego/
-├── config.example.yaml          # annotated config template
-├── core_server.py               # WebSocket core server entry point
-├── web_server.py                # FastAPI web server entry point
-├── tui_client.py                # Textual TUI client entry point
-├── feishu_gateway.py            # Feishu (Lark) IM gateway
-├── skills/                      # global skill library
-│
-└── src/
-    ├── agent/                   # SpawnAgent, SimpleAgent (base), subagents
-    │   └── subagent/            # InfoGathererSubAgent, CodeExplorerSubAgent
-    ├── context/                 # SoulV5 / SoulV6 context handlers + memory
-    │   ├── memory_tools/        # soulv5_* + soulv6_tool_result_read tools
-    │   ├── agent_tools/         # spawn_subagent tool
-    │   ├── system_prompts/      # system prompt templates
-    │   └── subagent/            # subagent context handlers
-    ├── tool/                    # 20+ tools (file, bash, web, pdf, image …)
-    │   └── safe_bash/           # structured bash executor with security checks
-    ├── llm/                     # unified LLM client (6 providers)
-    ├── session/                 # session lifecycle, slash commands, cron
-    ├── core/                    # CoreScheduler (WebSocket hub)
-    ├── web/                     # FastAPI REST + WebSocket endpoints
-    ├── message/                 # TUI client, Feishu client/gateway
-    ├── security_executor/       # SecurityHandler + 10 security rules
-    ├── skill/                   # Skill loading and management
-    ├── task_manager/            # task tree, streaming, artifact store
-    ├── config/                  # ConfigManager (YAML + env + !include)
-    ├── logging/                 # LogManager + RunningLog
-    └── utility/                 # session ID validation helpers
+.
+├── scripts/
+│   ├── install.sh          # 一键安装脚本
+│   ├── start_core.sh       # 启动 Core 后端
+│   └── start_dashboard.sh  # 启动 Dashboard 前端
+├── pyclaego/
+│   ├── src/pyclaego/       # Python 包源码
+│   ├── dashboard/          # React 前端（Vite）
+│   ├── skills/             # 内置技能
+│   ├── tool_agents/        # 内置工具 Agent
+│   ├── .config.d/          # 默认配置模板
+│   └── config.example.yaml # 主配置模板
+└── tests/                  # 测试用例
+```
+
+运行时目录 `~/.pyclaego/`（由安装脚本创建）：
+
+```
+~/.pyclaego/
+├── config.yaml             # 主配置（从模板复制，可自定义）
+├── .config.d/              # 细分配置（llm、tools、security 等）
+├── .logs/                  # 日志文件
+├── .memory/                # 长期记忆存储
+├── .cache/                 # 缓存（WebFetch、任务工件等）
+├── personal_spaces/        # PersonalSpace 数据
+├── skills/                 # 技能目录
+└── tool_agents/            # 工具 Agent 目录
 ```
 
 ---
 
-## Context Strategies
+## 详细文档
 
-Two production context strategies are provided:
-
-| Strategy | Config key | Description |
-|----------|------------|-------------|
-| **SoulV5** | `soul_v5` | Multi-layer MD file tree memory (preferences, topics, cases, experiences) + SQLite FTS5 recall |
-| **SoulV6** | `soul_v6` | SoulV5 + tool result disk spillover, stale eviction, entity cards, open loops, turn briefs, write-conflict review |
-
-See [src/context/README.md](src/context/README.md) for full details.
-
----
-
-## Agent System
-
-`SpawnAgent` is the primary agent. It extends `SimpleAgent`'s tool-calling loop with:
-- Concurrent subagent dispatch via `spawn_subagent` tool
-- Configurable concurrency (`max_concurrent_subagents`)
-- Built-in subagent types: `info_gatherer`, `code_explorer`
-
-See [src/agent/README.md](src/agent/README.md) for full details.
-
----
-
-## Tools
-
-20+ built-in tools registered in `ToolManager`:
-
-| Category | Tools |
-|----------|-------|
-| File system | `read_file`, `write_file`, `file_edit`, `file_delete`, `copy_move`, `file_info`, `mkdir`, `list_directory`, `glob`, `find_line`, `search_text` |
-| Execution | `safe_bash`, `bash`, `python_exec` |
-| Web | `web_fetch` (cached), `web_search`, `download_file` |
-| Media | `read_image_base64`, `read_pdf` |
-
----
-
-## LLM Providers
-
-| Config `api` | Provider |
-|---|---|
-| `openai` | OpenAI and OpenAI-compatible endpoints |
-| `anthropic` | Anthropic Claude |
-| `gemini` | Google Gemini |
-| `deepseek` | DeepSeek (reasoning_content dialect) |
-| `deepseek_anthropic` | DeepSeek via Anthropic-compatible endpoint |
-| `kimi_anthropic` | Kimi Code via Anthropic-compatible endpoint |
-
----
-
-## License
-
-MIT — see [LICENSE](LICENSE).
-
+- [pyclaego/README.md](pyclaego/README.md) — 架构设计、核心特性、模块说明
+- [pyclaego/dashboard/README.md](pyclaego/dashboard/README.md) — 前端开发指南

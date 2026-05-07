@@ -1,0 +1,225 @@
+
+# Web 搜索工具
+web_search:
+  tool_type: "web_search"
+  tool_name: "web_search"
+  enabled: ${WEB_SEARCH_ENABLED:false}  # 是否启用（需要配置 API Key）
+  timeout: 10                      # 超时时间（秒）
+  provider: "serper"                # 搜索提供商: brave, serper, google
+  api_key: ${SERPER_API_KEY:}       # API Key（从环境变量读取）
+  max_results: 10                  # 默认最大结果数
+  # 如果使用 Google Custom Search，需要配置:
+  # search_engine_id: ${GOOGLE_CSE_ID:}
+
+# Web 抓取工具（兼容旧版本配置项，推荐使用 web_fetch_v2）
+web_fetch:
+  tool_type: "web_fetch"
+  tool_name: "web_fetch"
+  enabled: true                    # 是否启用
+  timeout: 30                      # 超时时间（秒）
+  user_agent: "Mozilla/5.0 (compatible; PyClaego/1.0; +https://github.com/PyClaego)"
+  max_content_length: 1048576      # 最大内容长度（1MB）
+  extract_text: true               # 是否提取纯文本
+  extract_metadata: true           # 是否提取元数据
+  cache_dir: !join_path ["@{pyclaego.root_path}", ".cache", "web_fetch"]
+  cache_format: "json"
+  cache_ttl: 86400  # 24小时，null 表示永不过期
+  truncate_threshold: 15000  # 字符数
+  file_naming: "hash_md5"
+
+# PDF 读取工具（文本提取 + MD 排版 + 缓存 + 章节行号映射）
+read_pdf:
+  tool_type: "read_pdf"
+  tool_name: "read_pdf"
+  enabled: true
+  working_dir: null
+  max_file_size: 31457280          # 30MB
+  allowed_paths: []
+  blocked_paths: []
+  # 增强配置
+  pdf_cache_dir: null              # null 则使用默认 ~/.pyclaego/.cache/pdf_md/
+  enable_md_cache: true            # 启用 MD 缓存
+  extract_md: true                 # 提取并格式化 Markdown
+  extract_outline: true            # 提取章节大纲
+  preview_length: 500              # 预览字符数（最大 5000）
+  pdf_backend: null                # "pypdf2" / "pdfplumber" / null（自动选择）
+
+# 文件读取工具
+read_file:
+  tool_type: "read_file"
+  tool_name: "read_file"
+  enabled: true
+  working_dir: null
+  max_file_size: 10485760          # 10MB
+  allowed_paths: []                # 白名单（空表示仅受黑名单约束）
+  blocked_paths: []                # 黑名单
+
+# 文件写入工具
+write_file:
+  tool_type: "write_file"
+  tool_name: "write_file"
+  enabled: true
+  working_dir: null
+  max_file_size: 10485760
+  allowed_paths: []
+  blocked_paths: []
+  auto_mkdir: true
+  forbid_write_outside_allowed: false
+
+# 目录阅览工具
+list_directory:
+  tool_type: "list_directory"
+  tool_name: "list_directory"
+  enabled: true
+  working_dir: null
+  allowed_paths: []
+  blocked_paths: []
+
+# 文本查找工具
+search_text:
+  tool_type: "search_text"
+  tool_name: "search_text"
+  enabled: true
+  working_dir: null
+  max_file_size: 10485760
+  allowed_paths: []
+  blocked_paths: []
+
+# 目录创建工具
+mkdir:
+  tool_type: "mkdir"
+  tool_name: "mkdir"
+  enabled: true
+  working_dir: null
+  allowed_paths: []
+  blocked_paths: []
+
+# Glob 文件匹配工具
+glob:
+  tool_type: "glob"
+  tool_name: "glob"
+  enabled: true
+  working_dir: null
+  allowed_paths: []
+  blocked_paths: []
+
+# 文件下载工具
+download_file:
+  tool_type: "download_file"
+  tool_name: "download_file"
+  enabled: true
+  timeout: 60                      # 下载超时时间（秒，默认 60）
+
+# 图片 Base64 读取工具
+read_image_base64:
+  tool_type: "read_image_base64"
+  tool_name: "read_image_base64"
+  enabled: true
+  working_dir: null
+  max_file_size: 10485760          # 最大图片大小（10MB）
+  allowed_paths: []
+  blocked_paths: []
+
+# 文件编辑工具（字符串替换，无需重写整个文件）
+file_edit:
+  tool_type: "file_edit"
+  tool_name: "file_edit"
+  enabled: true
+  working_dir: null
+  max_file_size: 10485760
+  allowed_paths: []
+  blocked_paths: []
+
+# 文件/目录删除工具
+file_delete:
+  tool_type: "file_delete"
+  tool_name: "file_delete"
+  enabled: true
+  working_dir: null
+  allowed_paths: []
+  blocked_paths: []
+
+# 文件/目录复制与移动工具
+copy_move:
+  tool_type: "copy_move"
+  tool_name: "copy_move"
+  enabled: true
+  working_dir: null
+  allowed_paths: []
+  blocked_paths: []
+
+# 文件元信息与大纲工具
+file_info:
+  tool_type: "file_info"
+  tool_name: "file_info"
+  enabled: true
+  working_dir: null
+  max_file_size: 10485760
+  allowed_paths: []
+  blocked_paths: []
+
+# 关键词行列定位工具
+find_line:
+  tool_type: "find_line"
+  tool_name: "find_line"
+  enabled: true
+  working_dir: null
+  max_file_size: 10485760
+  allowed_paths: []
+  blocked_paths: []
+
+# Bash 执行工具（已被 safe_bash 取代，禁用）
+bash:
+  tool_type: "bash"
+  tool_name: "bash"
+  enabled: true                    # 是否启用
+  timeout: 3600                    # 超时时间（秒）
+  working_dir: null                # 工作目录（null 表示当前目录）
+  allowed_commands: []             # 白名单（空表示允许所有，除黑名单外）
+  blocked_commands:                # 黑名单
+    - "rm"
+    - "dd"
+    - "format"
+    - "mkfs"
+    - "fdisk"
+    - "shutdown"
+    - "reboot"
+    - "halt"
+    - "poweroff"
+
+# 结构化安全 Bash 工具（通过 XML/JSON 命令树执行，无 shell 中间层）
+safe_bash:
+  tool_type: "safe_bash"
+  tool_name: "safe_bash"
+  enabled: false
+  timeout: 120                     # 超时时间（秒）
+  input_format: "auto"             # "xml" | "json" | "auto"
+  path_scope: null                 # 路径限制（null 表示不限制，如 "/home/agent"）
+  working_dir: null                # 默认工作目录（null 表示当前目录）
+
+# Python 执行工具（无沙盒，仅限可信脚本）
+python_exec:
+  tool_type: "python_exec"
+  tool_name: "python_exec"
+  enabled: true                    # 已被 safe_python 取代；如需执行可信脚本可重新启用
+  timeout: 60
+  working_dir: null
+
+# AST 安全验证的 Python 执行工具（沙盒隔离，推荐用于 Agent 代码执行）
+safe_python:
+  tool_type: "safe_python"
+  tool_name: "safe_python"
+  enabled: false
+  timeout: 30                      # 执行超时（秒）；超时后子进程被强杀
+  max_memory_mb: 256               # 子进程内存上限（MiB，Unix 有效）
+  max_depth: 8                     # 代码最大嵌套深度（超出则拒绝）
+  max_stmts: 200                   # 代码最大语句数（超出则拒绝）
+  max_lines: 500                   # 代码最大行数（超出则拒绝）
+  path_scope: null                 # 保留字段：未来版本将限制文件访问路径
+  working_dir: null                # 保留字段
+
+# 用户确认查询工具（agent 发起的交互式确认，挂起直到用户回复）
+query_user:
+  tool_type: "query_user"
+  tool_name: "query_user"
+  enabled: true

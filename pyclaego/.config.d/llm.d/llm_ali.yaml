@@ -1,0 +1,50 @@
+
+ali_qwen3_6plus:  # 阿里百炼 Qwen3-6Plus 模型配置示例
+  api: "deepseek"
+  api_key: ${ALIBL_API_KEY:}
+  base_url: "https://token-plan.cn-beijing.maas.aliyuncs.com/compatible-mode/v1"
+  model: "qwen3.6-plus"
+  temperature: 1.0
+  max_tokens: 25600
+  max_context_tokens: 960000
+
+ali_glm5:  # 阿里百炼 GLM-5 模型配置示例
+  api: "openai"
+  api_key: ${ALIBL_API_KEY:}
+  base_url: "https://token-plan.cn-beijing.maas.aliyuncs.com/compatible-mode/v1"
+  model: "glm-5"
+  temperature: 1.0
+  max_tokens: 32000
+  max_context_tokens: 202745
+
+ali_qwen3_6plus_ant:  # 阿里百炼 Qwen3-6Plus 模型配置示例
+  api: "anthropic"
+  api_key: ${ALIBL_API_KEY:}
+  base_url: "https://token-plan.cn-beijing.maas.aliyuncs.com/apps/anthropic"
+  model: "qwen3.6-plus"
+  temperature: 1.0
+  max_tokens: 25600
+  max_context_tokens: 960000
+
+ali_glm5_ant:  # 阿里百炼 GLM-5 模型配置示例
+  api: "anthropic"
+  api_key: ${ALIBL_API_KEY:}
+  base_url: "https://token-plan.cn-beijing.maas.aliyuncs.com/apps/anthropic"
+  model: "glm-5"
+  temperature: 1.0
+  max_tokens: 32000
+  max_context_tokens: 202745
+
+# qwen3_30b_a3b:  # Qwen3-30B-A3B 模型配置示例
+#   # 注意: 不同地域的base_url不通用（下方示例使用新加坡地域的base_url）
+#   # - 新加坡: https://dashscope-intl.aliyuncs.com/compatible-mode/v1
+#   # - 美国（弗吉尼亚）: https://dashscope-us.aliyuncs.com/compatible-mode/v1
+#   # - 中国北京: https://dashscope.aliyuncs.com/compatible-mode/v1
+#   # - 中国香港：https://cn-hongkong.dashscope.aliyuncs.com/compatible-mode/v1
+#   api: "openai"
+#   api_key: ${DASHSCOPE_API_KEY:}
+#   base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"
+#   model: "qwen3-30b-a3b"
+#   temperature: 1.0
+#   max_tokens: 4096
+#   max_context_tokens: 25600

@@ -2,36 +2,51 @@ name: CI
 
 on:
   push:
-    branches: ["main", "master"]
+    branches: [main, master]
   pull_request:
-    branches: ["main", "master"]
 
 jobs:
   lint:
-    name: Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: astral-sh/setup-uv@v5
         with:
-          python-version: "3.12"
-      - name: Install ruff
-        run: pip install ruff
-      - name: Run ruff
-        run: ruff check .
+          version: "latest"
+      - name: Ruff lint
+        run: uv run ruff check .
+      - name: Ruff format
+        run: uv run ruff format --check .
 
   test:
-    name: Test (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12"]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: astral-sh/setup-uv@v5
         with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install package and test dependencies
-        run: pip install -e ".[tui]" pytest
-      - name: Run tests
-        run: pytest
+          version: "latest"
+      - name: Set Python version
+        run: uv python pin ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: uv sync --all-packages --dev
+      - name: Ruff lint
+        run: uv run --package pyclaego ruff check pyclaego/src/ pyclaego/tests/
+      - name: Ruff format check
+        run: uv run --package pyclaego ruff format --check pyclaego/src/ pyclaego/tests/
+      - name: Run tests (pyclaego)
+        run: uv run --package pyclaego pytest pyclaego/tests/ -v --cov=pyclaego --cov-report=term-missing --cov-report=xml
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-${{ matrix.python-version }}
+          path: coverage.xml
+      - name: Run tests (lossless_claw)
+        run: uv run --package lossless-claw-py pytest lossless_claw/tests/ --cov=lcm --cov-report=term-missing
+        continue-on-error: true
+      - name: Run tests (md_kbase)
+        run: uv run --package md-kbase pytest md_kbase/tests/ --cov=md_kbase --cov-report=term-missing
+        continue-on-error: true

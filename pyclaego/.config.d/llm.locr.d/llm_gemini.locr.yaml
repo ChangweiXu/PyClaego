@@ -1,0 +1,108 @@
+# 本地 LLM Router 代理 — Gemini 系列模型
+#
+# 这些 provider 将请求发送到本地 llm_router（http://127.0.0.1:18790），
+# 由 router 根据 model 字段匹配上游并转发。
+# model 值必须与 llm_router.yaml 中对应 upstream 的 alias 完全一致。
+
+# locr_gmn3_1p:  # Gemini 3.1 Pro Preview → 本地代理
+#   api: "gemini"
+#   api_key: ""
+#   base_url: "http://127.0.0.1:18790"
+#   model: "gmn3_1p"                 # llm_router.yaml gemini upstream alias
+#   temperature: 1.0
+#   max_tokens: 16384
+#   max_context_tokens: 960000
+
+# locr_gmn3f:  # Gemini 3 Flash Preview → 本地代理
+#   api: "gemini"
+#   api_key: ""
+#   base_url: "http://127.0.0.1:18790"
+#   model: "gmn3f"                   # llm_router.yaml gemini upstream alias
+#   temperature: 1.0
+#   max_tokens: 16384
+#   max_context_tokens: 960000
+
+# locr_gmn2_5p:  # Gemini 2.5 Pro → 本地代理
+#   api: "gemini"
+#   api_key: ""
+#   base_url: "http://127.0.0.1:18790"
+#   model: "gmn2_5p"                 # llm_router.yaml gemini upstream alias
+#   temperature: 1.0
+#   max_tokens: 16384
+#   max_context_tokens: 960000
+
+# locr_gmn2_5f:  # Gemini 2.5 Flash → 本地代理
+#   api: "gemini"
+#   api_key: ""
+#   base_url: "http://127.0.0.1:18790"
+#   model: "gmn2_5f"                 # llm_router.yaml gemini upstream alias
+#   temperature: 1.0
+#   max_tokens: 16384
+#   max_context_tokens: 960000
+
+# ── Gemini OpenAI-compatible (本地代理) ─────────────────────────────────────
+# model 值必须与 llm_router.yaml 中 gemini-oai upstream 的 alias 完全一致
+
+locr_gmn3_1p_oai:  # Gemini 3.1 Pro Preview → 本地代理 (OpenAI 兼容)
+  api: "gemini_openai"
+  api_key: "local_router_no_key_needed"
+  base_url: "http://127.0.0.1:18790/v1"
+  model: "gmn3_1p_oai"             # llm_router.yaml gemini-oai upstream alias
+  temperature: 1.0
+  max_tokens: 16384
+  max_context_tokens: 960000
+  # reasoning_effort: "high"      # 与 thinking_config.thinking_level 重叠
+  extra_body:
+    extra_body:
+      google:
+        thinking_config:
+          thinking_level: "high"  # low, medium, high (NO minimal)
+          include_thoughts: true
+
+locr_gmn3f_oai:  # Gemini 3 Flash Preview → 本地代理 (OpenAI 兼容)
+  api: "gemini_openai"
+  api_key: "local_router_no_key_needed"
+  base_url: "http://127.0.0.1:18790/v1"
+  model: "gmn3f_oai"               # llm_router.yaml gemini-oai upstream alias
+  temperature: 1.0
+  max_tokens: 16384
+  max_context_tokens: 960000
+  # reasoning_effort: "high"      # 与 thinking_config.thinking_level 重叠
+  extra_body:
+    extra_body:
+      google:
+        thinking_config:
+          thinking_level: "low"   # minimal, low, medium, high
+          include_thoughts: true
+
+locr_gmn2_5p_oai:  # Gemini 2.5 Pro → 本地代理 (OpenAI 兼容)
+  api: "gemini_openai"
+  api_key: "local_router_no_key_needed"
+  base_url: "http://127.0.0.1:18790/v1"
+  model: "gmn2_5p_oai"             # llm_router.yaml gemini-oai upstream alias
+  temperature: 1.0
+  max_tokens: 16384
+  max_context_tokens: 960000
+  # reasoning_effort: "high"      # 与 thinking_config.thinking_level 重叠
+  extra_body:
+    extra_body:
+      google:
+        thinking_config:
+          thinking_budget: 8192   # 1024, 8192, 24576
+          include_thoughts: true
+
+locr_gmn2_5f_oai:  # Gemini 2.5 Flash → 本地代理 (OpenAI 兼容)
+  api: "gemini_openai"
+  api_key: "local_router_no_key_needed"
+  base_url: "http://127.0.0.1:18790/v1"
+  model: "gmn2_5f_oai"             # llm_router.yaml gemini-oai upstream alias
+  temperature: 1.0
+  max_tokens: 16384
+  max_context_tokens: 960000
+  # reasoning_effort: "high"      # 与 thinking_config.thinking_level 重叠
+  extra_body:
+    extra_body:
+      google:
+        thinking_config:
+          thinking_budget: 1024   # 1024, 8192, 24576
+          include_thoughts: true

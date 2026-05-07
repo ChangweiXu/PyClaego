@@ -1,0 +1,294 @@
+/* ============================================================
+   logs.css — scoped styles for the /dashboard/logs page
+   ============================================================ */
+
+/* ---------- Page layout ---------- */
+
+.logs-page {
+  display: flex;
+  flex-direction: column;
+  /* Fill the viewport below the topbar; cancel the 1.5rem app-body padding. */
+  height: calc(100vh - var(--topbar-h, 56px));
+  margin: -1.5rem;
+  overflow: hidden;
+  background: var(--color-bg, #1e1e2e);
+  color: var(--color-text, #cdd6f4);
+  font-family: inherit;
+}
+
+/* ---------- Top toolbar ---------- */
+
+.logs-topbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: var(--color-surface, #181825);
+  border-bottom: 1px solid var(--color-border, #313244);
+  flex-shrink: 0;
+}
+
+.logs-topbar-title {
+  font-weight: 600;
+  font-size: 14px;
+  margin-right: auto;
+}
+
+.logs-topbar-btn {
+  padding: 3px 10px;
+  font-size: 12px;
+  border-radius: 4px;
+  border: 1px solid var(--color-border, #45475a);
+  background: transparent;
+  color: var(--color-text, #cdd6f4);
+  cursor: pointer;
+}
+
+.logs-topbar-btn:hover {
+  background: var(--color-hover, #313244);
+}
+
+/* ---------- Body ---------- */
+
+.logs-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ---------- Sidebar (30%) ---------- */
+
+.logs-sidebar {
+  width: 30%;
+  min-width: 180px;
+  max-width: 400px;
+  border-right: 1px solid var(--color-border, #313244);
+  overflow-y: auto;
+  background: var(--color-surface, #181825);
+  padding: 4px 0;
+}
+
+/* ---------- File tree ---------- */
+
+.logs-tree-root,
+.logs-tree-children {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.logs-tree-dir,
+.logs-tree-file {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  padding: 3px 8px;
+  border: none;
+  background: transparent;
+  color: var(--color-text, #cdd6f4);
+  font-size: 12.5px;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-radius: 3px;
+}
+
+.logs-tree-dir:hover,
+.logs-tree-file:hover {
+  background: var(--color-hover, #313244);
+}
+
+.logs-tree-file--active {
+  background: var(--color-active, #45475a) !important;
+  color: var(--color-accent, #89dceb);
+}
+
+.logs-tree-icon {
+  flex-shrink: 0;
+  width: 14px;
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+.logs-tree-icon--file {
+  font-size: 9px;
+  font-family: monospace;
+}
+
+.logs-tree-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.logs-tree-empty {
+  padding: 16px;
+  font-size: 12px;
+  color: var(--color-muted, #6c7086);
+}
+
+/* ---------- Main area (70%) ---------- */
+
+.logs-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* ---------- Viewer wrapper ---------- */
+
+.logs-viewer {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ---------- Tab bar ---------- */
+
+.logs-tabbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 8px 0;
+  background: var(--color-surface, #181825);
+  border-bottom: 1px solid var(--color-border, #313244);
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+
+.logs-tab {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px 4px 12px;
+  border-radius: 4px 4px 0 0;
+  border: 1px solid transparent;
+  border-bottom: none;
+  background: transparent;
+  color: var(--color-muted, #9399b2);
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  max-width: 200px;
+  overflow: hidden;
+}
+
+.logs-tab:hover {
+  background: var(--color-hover, #313244);
+  color: var(--color-text, #cdd6f4);
+}
+
+.logs-tab--active {
+  background: var(--color-bg, #1e1e2e);
+  border-color: var(--color-border, #313244);
+  color: var(--color-text, #cdd6f4);
+}
+
+.logs-tab-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.logs-tab-close {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0 2px;
+  border-radius: 3px;
+  opacity: 0.6;
+}
+
+.logs-tab-close:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ---------- Editor area ---------- */
+
+.logs-editor-area {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.logs-codemirror {
+  height: 100%;
+  font-size: 12.5px;
+}
+
+/* Make the inner cm-editor fill the wrapper */
+.logs-codemirror .cm-editor {
+  height: 100%;
+}
+
+.logs-codemirror .cm-scroller {
+  overflow: auto;
+}
+
+.logs-empty-state,
+.logs-error-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 13px;
+  color: var(--color-muted, #6c7086);
+  padding: 32px;
+  text-align: center;
+}
+
+.logs-error-state {
+  color: #f38ba8;
+}
+
+/* ---------- Status bar ---------- */
+
+.logs-statusbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 12px;
+  background: var(--color-surface, #181825);
+  border-top: 1px solid var(--color-border, #313244);
+  flex-shrink: 0;
+  font-size: 11px;
+}
+
+.logs-wrap-btn {
+  padding: 2px 8px;
+  font-size: 11px;
+  border-radius: 3px;
+  border: 1px solid var(--color-border, #45475a);
+  background: transparent;
+  color: var(--color-muted, #9399b2);
+  cursor: pointer;
+}
+
+.logs-wrap-btn:hover {
+  background: var(--color-hover, #313244);
+  color: var(--color-text, #cdd6f4);
+}
+
+.logs-wrap-btn--active {
+  border-color: var(--color-accent, #89dceb);
+  color: var(--color-accent, #89dceb);
+}
+
+.logs-statusbar-info {
+  color: var(--color-muted, #6c7086);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

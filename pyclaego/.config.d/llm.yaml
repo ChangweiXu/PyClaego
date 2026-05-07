@@ -1,0 +1,66 @@
+
+default_provider: "dpsk_v4p"
+
+# 默认的轻量级、中等、重量级 LLM 提供者配置，分别对应不同的使用场景和资源需求
+light_llm_provider: "@llm.default_provider"
+medium_llm_provider: "@llm.default_provider"
+heavy_llm_provider: "@llm.default_provider"
+
+providers:
+  kimi_code:
+    api: "kimi_anthropic"          # Anthropic 协议兼容层（Moonshot Kimi Code 套餐）
+    api_key: ${KIMI_CODE_API_KEY:}
+    base_url: "https://api.kimi.com/coding"
+    model: "k2p6"
+    temperature: 0.7
+    max_tokens: 8192
+    max_context_tokens: 262144
+    extra_body:
+      thinking:
+        type: "enabled"            # 思考过程记录：enabled, disabled
+
+  kimi_code_oai:
+    api: "openai"                  # OpenAI
+    api_key: ${KIMI_CODE_API_KEY:}
+    base_url: "https://api.kimi.com/coding/v1"
+    model: "k2p6"
+    temperature: 0.7
+    max_tokens: 8192
+    max_context_tokens: 262144
+    extra_body:
+      thinking:
+        type: "enabled"            # 思考过程记录：enabled, disabled
+
+  moonshot_kimi:
+    api: "openai"                  # API 类型: openai, anthropic, gemini
+    api_key: ${MOONSHOT_API_KEY:}
+    base_url: "https://api.moonshot.cn/v1"
+    model: "kimi-k2.6"
+    temperature: 1.0
+    max_tokens: 8192
+    max_context_tokens: 262144
+    extra_body:
+      thinking:
+        type: "enabled"            # 思考过程记录：enabled, disabled
+
+  glm5_1:  # GLM 5.1s 模型配置示例
+    api: "openai"                  # API 类型: openai, anthropic, gemini
+    api_key: ${ZHIPU_API_KEY:}
+    base_url: "https://open.bigmodel.cn/api/paas/v4"  # 大陆版
+    # base_url: "https://api.z.ai/api/paas/v4/"  # 国际版
+    model: "glm-5.1"
+    temperature: 1.0
+    max_tokens: 8192
+    max_context_tokens: 196608
+
+  dpsk_v4p:  # DeepSeek V4 Pro 模型配置示例
+    api: "deepseek"                # OpenAI 协议 + DeepSeek reasoning_content 思考模式
+    api_key: ${DEEPSEEK_API_KEY:}
+    base_url: "https://api.deepseek.com"              # OpenAI
+    model: "deepseek-v4-pro"
+    max_tokens: 25600             # max: 384K
+    max_context_tokens: 960000    # max: 1M
+    reasoning_effort: "high"
+    extra_body:                   # 额外请求体参数示例
+      thinking:
+        type: "enabled"           # 启用深度思考模式

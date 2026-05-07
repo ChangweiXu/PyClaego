@@ -1,0 +1,35 @@
+{
+  "//": [
+    "Widget 级别配置示例。",
+    "",
+    "用法：复制本文件到",
+    "  <personal_space.root_path>/<ps_id>/widgets/<widget_id>/widget.config.json",
+    "例：",
+    "  ~/pyclaego/personal_spaces/alice/widgets/w_chat_default/widget.config.json",
+    "",
+    "层级（deep_merge，从低到高）：",
+    "  global YAML  ←  personal_space.config.json  ←  widget_class.defaults  ←  widget.config.json",
+    "",
+    "本文件优先级最高，会覆盖前三层中的同名字段。",
+    "所有键都是可选的；只写你想为该 widget 单独定制的部分。"
+  ],
+
+  "agent": {
+    "//": "为该 widget 单独指定 Agent 策略",
+    "type": "pipeline",
+    "llm": "openai_gpt5"
+  },
+
+  "context": {
+    "//": "为该 widget 单独指定 Context 策略",
+    "type": "window_v3",
+    "window": {
+      "keep_groups": 3
+    }
+  },
+
+  "ps_metadata": {
+    "//": "Widget 级元数据覆盖",
+    "project_root": "/tmp/scratch"
+  }
+}

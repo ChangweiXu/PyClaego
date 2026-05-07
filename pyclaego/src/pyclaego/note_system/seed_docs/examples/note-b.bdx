@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bdx:doc xmlns:bdx="https://pyclaego.local/bdx/v1">
+  <bdx:meta>
+    <bdx:title>Example Note B</bdx:title>
+  </bdx:meta>
+  <bdx:body>
+    <bdx:block type="heading" level="1" id="b_nb01">
+      <bdx:content><![CDATA[Example Note B]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="paragraph" id="b_nb02">
+      <bdx:content><![CDATA[This note is linked from ]]></bdx:content>
+      <bdx:link target="note-a.bdx" anchor="" display="Example Note A"/>
+      <bdx:content><![CDATA[, demonstrating the backlinks feature.]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="heading" level="2" id="b_nb03">
+      <bdx:content><![CDATA[Anchor Link Example]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="paragraph" id="b_nb04">
+      <bdx:content><![CDATA[This paragraph has a stable anchor ID (]]></bdx:content>
+      <bdx:content><![CDATA[b_nb04]]></bdx:content>
+      <bdx:content><![CDATA[). Link directly to it from another note using an anchor target.]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="heading" level="2" id="b_nb05">
+      <bdx:content><![CDATA[Lists]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="list" style="unordered" id="b_nb06">
+      <bdx:listItem id="b_nb06a"><bdx:content><![CDATA[Notes are .bdx XML files on disk]]></bdx:content></bdx:listItem>
+      <bdx:listItem id="b_nb06b"><bdx:content><![CDATA[Metadata is stored inside the document in a <bdx:meta> element]]></bdx:content></bdx:listItem>
+      <bdx:listItem id="b_nb06c"><bdx:content><![CDATA[Full-text search is powered by SQLite FTS5]]></bdx:content></bdx:listItem>
+      <bdx:listItem id="b_nb06d"><bdx:content><![CDATA[Doc links are stored in the doc_links table for graph queries]]></bdx:content></bdx:listItem>
+    </bdx:block>
+    <bdx:block type="callout" id="b_nb07">
+      <bdx:content><![CDATA[Try the Graph drawer to see this note connected to Example Note A.]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="divider" id="b_nb08"/>
+    <bdx:block type="paragraph" id="b_nb09">
+      <bdx:content><![CDATA[See also: ]]></bdx:content>
+      <bdx:link target="note-a.bdx" anchor="" display="Example Note A"/>
+      <bdx:content><![CDATA[ | ]]></bdx:content>
+      <bdx:link target="../welcome.bdx" anchor="" display="Welcome"/>
+    </bdx:block>
+  </bdx:body>
+</bdx:doc>

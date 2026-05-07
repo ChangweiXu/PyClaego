@@ -1,0 +1,24 @@
+# 本地 LLM Router 代理 — Claude 系列模型
+#
+# 注意：claude upstream 在 llm_router.yaml 中当前已注释，因此这些 provider 也同步注释。
+# 如需启用，取消注释本文件并在 llm_router.yaml 中启用对应 upstream。
+
+# locr_clo4_7:  # Claude Opus 4.7 → 本地代理
+#   api: "anthropic"
+#   api_key: "local_router_no_key_needed"
+#   base_url: "http://127.0.0.1:18790"
+#   model: "clo4_7"              # llm_router.yaml claude upstream alias
+#   temperature: 1.0
+#   max_tokens: 12800
+#   max_context_tokens: 960000
+
+# locr_cls4_6:  # Claude Sonnet 4.6 → 本地代理
+#   api: "anthropic"
+#   api_key: "local_router_no_key_needed"
+#   base_url: "http://127.0.0.1:18790"
+#   model: "cls4_6"              # llm_router.yaml claude upstream alias
+#   temperature: 1.0
+#   max_tokens: 12800
+#   max_context_tokens: 960000
+
+{}  # 占位空 dict：claude upstream 在 llm_router.yaml 中启用后，取消上方注释并删除此行

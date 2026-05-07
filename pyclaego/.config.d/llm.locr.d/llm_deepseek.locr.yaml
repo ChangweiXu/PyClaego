@@ -1,0 +1,28 @@
+# 本地 LLM Router 代理 — DeepSeek 系列模型
+#
+# 这些 provider 将请求发送到本地 llm_router（http://127.0.0.1:18790），
+# 由 router 根据 model 字段匹配上游并转发。
+# model 值必须与 llm_router.yaml 中对应 upstream 的 alias 完全一致。
+
+locr_dpsk_v4p:  # DeepSeek V4 Pro (OpenAI 协议) → 本地代理
+  api: "deepseek"
+  api_key: "local_router_no_key_needed"
+  base_url: "http://127.0.0.1:18790/v1"
+  model: "dpsk_v4p"                # llm_router.yaml deepseek upstream alias
+  max_tokens: 25600
+  max_context_tokens: 960000
+  reasoning_effort: "high"
+  extra_body:                   # 额外请求体参数示例
+    thinking:
+      type: "enabled"           # 启用深度思考模式
+
+locr_dpsk_v4p_ant:  # DeepSeek V4 Pro (Anthropic 协议) → 本地代理
+  api: "deepseek_anthropic"
+  api_key: "local_router_no_key_needed"
+  base_url: "http://127.0.0.1:18790"
+  model: "dpsk_v4p_ant"            # llm_router.yaml deepseek-ant upstream alias
+  max_tokens: 25600
+  max_context_tokens: 960000    # max: 1M
+  extra_body:                   # 额外请求体参数示例
+    output_config:              # 输出配置
+      effort: "high"            # 启用深度思考模式

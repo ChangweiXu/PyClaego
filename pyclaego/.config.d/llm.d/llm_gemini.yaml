@@ -1,0 +1,92 @@
+
+gmn3_1p:  # Gemini 3.1 Pro Preview 模型配置示例
+  # Input:  $ 2($ 4)/1m tokens. (> 200k tokens context)
+  # Output: $12($18)/1m tokens. (> 200k tokens context)
+  api: "gemini"                  # API 类型: openai, anthropic, gemini
+  api_key: ${GEMINI_API_KEY:}
+  model: "gemini-3.1-pro-preview"
+  temperature: 1.0
+  max_tokens: 16384
+  max_context_tokens: 960000
+
+gmn3f:  # Gemini 3 Flash Preview 模型配置示例
+  # Input:  $ 0.5/1m tokens.
+  # Output: $ 3.0/1m tokens.
+  api: "gemini"                  # API 类型: openai, anthropic, gemini
+  api_key: ${GEMINI_API_KEY:}
+  model: "gemini-3-flash-preview"
+  temperature: 1.0
+  max_tokens: 16384
+  max_context_tokens: 960000
+
+gmn2_5p:  # Gemini 2.5 Pro 模型配置示例
+  # Input:  $ 1.25($ 2.50)/1m tokens. (> 200k tokens context)
+  # Output: $10.00($15.00)/1m tokens. (> 200k tokens context)
+  api: "gemini"                  # API 类型: openai, anthropic, gemini
+  api_key: ${GEMINI_API_KEY:}
+  model: "gemini-2.5-pro"
+  temperature: 1.0
+  max_tokens: 16384
+  max_context_tokens: 960000
+
+gmn2_5f:  # Gemini 2.5 Flash 模型配置示例
+  # Input:  $ 0.3/1m tokens.
+  # Output: $ 2.5/1m tokens.
+  api: "gemini"                  # API 类型: openai, anthropic, gemini
+  api_key: ${GEMINI_API_KEY:}
+  model: "gemini-2.5-flash"
+  temperature: 1.0
+  max_tokens: 16384
+  max_context_tokens: 960000
+
+# ── Gemini OpenAI-compatible (直连) ─────────────────────────────────────────
+# 通过 Gemini 官方 OpenAI 兼容端点调用，支持 reasoning_effort 思考控制
+# base_url: https://generativelanguage.googleapis.com/v1beta/openai
+
+gmn3_1p_oai:  # Gemini 3.1 Pro Preview → OpenAI 兼容端点
+  # Input:  $ 2($ 4)/1m tokens. (> 200k tokens context)
+  # Output: $12($18)/1m tokens. (> 200k tokens context)
+  api: "gemini_openai"           # Gemini OpenAI 兼容端点 + thought_signature 往返
+  api_key: ${GEMINI_API_KEY:}
+  base_url: "https://generativelanguage.googleapis.com/v1beta/openai"
+  model: "gemini-3.1-pro-preview"
+  temperature: 1.0
+  max_tokens: 16384
+  max_context_tokens: 960000
+  reasoning_effort: "high"       # thinking_level: high (默认动态思考)
+
+gmn3f_oai:  # Gemini 3 Flash Preview → OpenAI 兼容端点
+  # Input:  $ 0.5/1m tokens.
+  # Output: $ 3.0/1m tokens.
+  api: "gemini_openai"           # Gemini OpenAI 兼容端点 + thought_signature 往返
+  api_key: ${GEMINI_API_KEY:}
+  base_url: "https://generativelanguage.googleapis.com/v1beta/openai"
+  model: "gemini-3-flash-preview"
+  temperature: 1.0
+  max_tokens: 16384
+  max_context_tokens: 960000
+  reasoning_effort: "high"       # thinking_level: high (默认动态思考)
+
+gmn2_5p_oai:  # Gemini 2.5 Pro → OpenAI 兼容端点
+  # Input:  $ 1.25($ 2.50)/1m tokens. (> 200k tokens context)
+  # Output: $10.00($15.00)/1m tokens. (> 200k tokens context)
+  api: "gemini_openai"           # Gemini OpenAI 兼容端点 + thought_signature 往返
+  api_key: ${GEMINI_API_KEY:}
+  base_url: "https://generativelanguage.googleapis.com/v1beta/openai"
+  model: "gemini-2.5-pro"
+  temperature: 1.0
+  max_tokens: 16384
+  max_context_tokens: 960000
+  reasoning_effort: "high"       # thinking_budget: 24576
+
+gmn2_5f_oai:  # Gemini 2.5 Flash → OpenAI 兼容端点
+  # Input:  $ 0.3/1m tokens.
+  # Output: $ 2.5/1m tokens.
+  api: "gemini_openai"           # Gemini OpenAI 兼容端点 + thought_signature 往返
+  api_key: ${GEMINI_API_KEY:}
+  base_url: "https://generativelanguage.googleapis.com/v1beta/openai"
+  model: "gemini-2.5-flash"
+  temperature: 1.0
+  max_tokens: 16384
+  max_context_tokens: 960000
+  reasoning_effort: "high"       # thinking_budget: 24576

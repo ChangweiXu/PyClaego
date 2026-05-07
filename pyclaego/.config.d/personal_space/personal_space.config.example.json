@@ -1,0 +1,38 @@
+{
+  "//": [
+    "PersonalSpace 级别配置示例。",
+    "",
+    "用法：复制本文件到 <personal_space.root_path>/<ps_id>/personal_space.config.json",
+    "  例：~/pyclaego/personal_spaces/alice/personal_space.config.json",
+    "",
+    "层级（deep_merge，从低到高）：",
+    "  global YAML  ←  personal_space.config.json  ←  widget_class.defaults  ←  widget.config.json",
+    "",
+    "本文件中出现的字段会覆盖全局 config.yaml 中的同名字段（dict 内递归合并）。",
+    "下面所有键都是可选的；只写你想覆盖的部分即可。"
+  ],
+
+  "agent": {
+    "//": "覆盖该 PS 下所有 widget 的 Agent 策略（可被 widget.config.json 进一步覆盖）",
+    "type": "pipeline",
+    "llm": "kimi_code",
+    "use_tools": true
+  },
+
+  "context": {
+    "//": "覆盖该 PS 下所有 widget 的 Context 策略",
+    "type": "simple_v3",
+    "simple_v3": {
+      "keep_groups": 12
+    }
+  },
+
+  "ps_metadata": {
+    "//": "PS 级元数据，子 Agent / 工具可读取",
+    "project_root": {
+      "//": "项目根目录，子 Agent / 工具可基于此进行文件读写",
+      "!abs_path": "~/some/project"
+    },
+    "owner": "alice"
+  }
+}

@@ -1,0 +1,11 @@
+
+# gpt5_4:  # GPT-5.4 模型配置示例
+#   api: "openai"                  # API 类型: openai, anthropic, gemini
+#   api_key: ${GPT_API_KEY:}
+#   base_url: "https://your-openai-api.com/v1"
+#   model: "custom-gpt-model-name"
+#   temperature: 1.0
+#   max_tokens: 8192
+#   max_context_tokens: 180000
+
+{}  # 占位空 dict

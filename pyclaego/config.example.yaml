@@ -1,0 +1,205 @@
+# PyClaego 配置文件
+# 此文件位于项目根目录，作为默认配置
+
+pyclaego:
+  version: "1.0.0"                # 配置版本号，便于未来升级和兼容性检查
+  root_path: !abs_path "~/.pyclaego"  # 项目根路径，支持 ~/ 展开
+
+# 服务器配置
+server:
+  host: ${HOST:127.0.0.1}       # 使用环境变量 HOST，默认 127.0.0.1
+  port: ${PORT:18765}           # 使用环境变量 PORT，默认 18765
+  max_connections: 100          # 最大连接数
+  enable_web_server: true       # 是否在 core_server 启动时同步启动 Web API 服务器
+  enable_llm_router: false      # 是否在 core_server 启动时内建启动 LLM Router 代理
+
+# 客户端配置
+client:
+  server_url: !concat ["ws://", "@{server.host}", ":", "@{server.port}"]  # 自动拼接服务器地址
+  reconnect_interval: 3         # 重连间隔（秒）
+  timeout: 10                   # 连接超时（秒）
+
+# Web 服务器配置
+web:
+  host: 0.0.0.0                 # Web 服务器监听地址
+  port: 18888                   # Web 服务器端口
+  
+  # 任务桥接服务器配置（用于 CoreScheduler 和 Web Server 之间的进程间通信）
+  task_bridge:
+    host: "@{server.host}"      # 桥接服务器监听地址
+    port: 18766                 # 桥接服务器端口
+
+# 日志配置
+logging:
+  level: ${LOG_LEVEL:DEBUG}     # 日志级别: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: "text"                # 日志格式: text (普通文本), json (JSON格式)
+  log_root: !join_path ["@{pyclaego.root_path}", ".logs"]  # 日志根目录
+  file_enabled: true            # 是否启用文件日志
+  console_enabled: true         # 是否启用控制台日志
+  
+  # 日志轮转配置
+  rotation:
+    type: "time"                # 轮转类型: size (按大小), time (按时间)
+    max_bytes: 10485760         # 单个日志文件最大大小（字节，默认10MB）
+    backup_count: 5             # 保留的备份文件数量
+    when: "midnight"            # 时间轮转周期: midnight (每天午夜), H (每小时), D (每天), W0-W6 (周一到周日)
+
+  # 运行日志配置（RunningLog 类专用）
+  # 日志文件命名规则：{log_root}/{subdir}/{name}-YYYYMMDD-run.log
+  running_log:
+    subdir: "running"                        # 子目录（相对于 log_root），默认 running
+    format: "[{time}] [{level}] {message}"   # 行格式模板，支持 {time}/{level}/{message}
+    time_format: "%Y-%m-%d %H:%M:%S"         # 时间格式（strftime 格式）
+    encoding: "utf-8"                        # 文件编码
+
+  record_store:
+    # 调用记录 TTL（小时）。超过此时长的 JSON 记录文件将被后台任务自动删除。
+    # 0 = 禁用自动删除（永久保留）
+    record_ttl_hours: 48
+
+  task_artifact_store:
+    # 工件 TTL（小时）。超过此时长的 task 工件目录将在 TaskArtifactStore 启动时一次性清理。
+    # 0 = 禁用清理（永久保留）
+    artifact_ttl_hours: 168
+
+# LLM 配置
+llm: !include "./.config.d/llm.yaml"  # 从 llm.yaml 文件加载 LLM 配置
+
+# Agent 配置（PS 中的 Widget Agent 会继承此处配置，并可在 widget.config.json 中覆盖）
+# Context 配置（PS 中的 Widget Context 会继承此处配置，并可在 widget.config.json 中覆盖）
+# 子 Agent 的上下文配置，与 context 合并后传入子 Agent 上下文初始化
+# (PS 中的子 Agent 会继承此处配置，并可在 widget.config.json 中覆盖)
+_ext_agent_context: !include_merge "./.config.d/agent_context.yaml"  # 从 agent_context.yaml 文件加载 Agent 和 Context 的全局默认配置
+
+# ============================================================================
+# PersonalSpace 配置（取代原来的 session 配置）
+#
+# 配置分层（从低到高，deep_merge）：
+#   global YAML  ← personal_space.config.json  ← widget_class.defaults  ← widget.config.json
+#
+# 磁盘布局：
+#   <root_path>/<ps_id>/
+#     personal_space.json          ← manifest（widget_order 等，不合并）
+#     personal_space.config.json   ← PS 级配置覆盖（让 .config.d/personal_space/ 下的示例）
+#     widgets/<widget_id>/
+#       widget.json                ← widget manifest
+#       widget.config.json         ← widget 级配置覆盖
+#       history.json               ← 对话历史
+# ============================================================================
+personal_space:
+  # PS 根目录（所有 PS 的父目录）
+  root_path: !join_path ["@{pyclaego.root_path}", "personal_spaces"]
+
+  # 同时驻内存的最大 PS 个数（LRU 趋退，被趋退者会被 unload）
+  max_active: 8
+
+# PS / Widget 元数据默认值（可在 personal_space.config.json 或 widget.config.json 中覆盖）
+ps_metadata:
+  # 代码探索子 Agent 使用的项目根目录（绝对路径或相对于 CWD）
+  project_root: "./"
+
+# 技能配置
+skill:
+  # 全局共享技能目录列表（按优先级从低到高排列，后者优先级更高）
+  # 支持 ~/ 路径展开和 !join_path 标签
+  directories:
+    - !join_path ["@{pyclaego.root_path}", "skills", "builtin"]   # 内置技能目录（随项目发布）
+    # - !join_path ["@{pyclaego.root_path}", "skills", "custom"]  # 用户自定义全局技能目录（可选）
+  
+  # 内容缓存（避免重复读取磁盘，建议生产环境开启）
+  cache_enabled: true
+  
+  # 技能默认启用状态
+  # 若某个技能的 SKILL.md frontmatter 未声明 metadata.enabled 字段，则使用此默认值
+  default_enabled: true
+
+# 注意：PS / Widget 独有技能无需在此配置，系统会自动从以下路径加载：
+#   - <personal_space.root_path>/<ps_id>/skills/                     （PS 级）
+#   - <personal_space.root_path>/<ps_id>/widgets/<wid>/skills/       （Widget 级）
+
+# ----------------------------------------------------------------------------
+# ToolAgent 配置（磁盘驱动的子代理定义）
+#
+# 子代理定义遵循 SKILL 的分层模式：
+#   builtin/  → <pyclaego.root_path>/tool_agents/builtin/      内置子代理
+#   global/   → <pyclaego.root_path>/tool_agents/              用户自定义全局
+#   PS/       → <ps_root>/<ps_id>/tool_agents/                  PS 级
+#   Widget/   → <ps_root>/<ps_id>/widgets/<wid>/tool_agents/    Widget 级
+#
+# 每个子代理是一个独立目录，内含 config.json：
+#   {                                                                       \n#     "name": "my_agent",                                                  \n#     "description": "自定义子代理...",                                     \n#     "system_prompt": "你是...\\n工作目录：{workspace_path}",               \n#     "subagent_type": "universal",                                        \n#     "allowed_tools": ["read_file", "glob"],                              \n#     "max_tool_rounds": 15,                                               \n#     "context_strategy": "summarizing",                                   \n#     "llm": "",                                                           \n#     "skills": ["*"],                                                     \n#     "workspace": "./workspace",                                          \n#     "metadata": {"version": "1.0.0"}                                    \n#   }                                                                       \n#
+# 字段说明：
+#   name:             子代理名称（必须与目录名一致）
+#   description:      给 LLM 看的类型描述（必填）
+#   system_prompt:    系统提示词模板，支持 {workspace_path} / {project_root}（必填）
+#   subagent_type:    编排逻辑："universal"（默认）使用 UniversalSubAgent
+#   allowed_tools:    工具白名单。["*"] = 全部工具，[] = 无工具
+#   max_tool_rounds:  最大工具调用轮次（默认 20）
+#   context_strategy: 上下文策略："none" | "summarizing" | "soulv6" | "fork"
+#   llm:              LLM provider ID（空 = 继承父 Agent）
+#   skills:           技能列表。["*"] = 全部技能，[] = 无技能
+#   workspace:        工作目录（相对于 config.json 的路径，默认 "./workspace"）
+#   metadata:         扩展元数据（version, author, tags 等）
+# ----------------------------------------------------------------------------
+tool_agents:
+  # 全局 tool_agent 目录列表（按优先级从低到高排列）
+  directories:
+    - !join_path ["@{pyclaego.root_path}", "tool_agents", "builtin"]   # 内置子代理
+    # - !join_path ["@{pyclaego.root_path}", "tool_agents"]            # 用户自定义全局
+  
+  # 内容缓存（避免重复读取磁盘）
+  cache_enabled: true
+
+# 注意：PS / Widget 独有 tool_agents 无需在此配置，系统会自动从以下路径加载：
+#   - <personal_space.root_path>/<ps_id>/tool_agents/               （PS 级）
+#   - <personal_space.root_path>/<ps_id>/widgets/<wid>/tool_agents/ （Widget 级）
+
+# 工具配置
+tools: !include "./.config.d/tools.yaml"  # 从 tools.yaml 文件加载工具配置
+
+# 安全配置
+security: !include "./.config.d/security.yaml"  # 从 security.yaml 文件加载安全规则配置
+
+# LLM Router 配置（本地 LLM 转发代理，独立进程：pyclaego-llm-router）
+# llm_router: !include "./.config.d/llm_router.yaml"
+
+# ================================================================
+# 飞书集成配置
+# 使用飞书开放平台自建应用接入，需在开发者后台开启机器人能力并配置权限
+# 参考文档: https://open.feishu.cn/document/server-docs/im-v1/message/create
+# ================================================================
+feishu:
+  # 是否在 CoreScheduler 启动时自动启动飞书网关（进程内模式）
+  # 设为 false 可在保留凭证配置的同时禁用飞书集成（无需清空 app_id）
+  enabled: ${FEISHU_ENABLED:false}  # 使用环境变量 FEISHU_ENABLED，默认 false
+
+  # 应用凭证（必填）
+  # 在飞书开放平台 https://open.feishu.cn/app 创建自建应用后获取
+  app_id: ${FEISHU_APP_ID:}               # 飞书应用 App ID，格式如 cli_xxxxxxxxxxxx
+  app_secret: ${FEISHU_APP_SECRET:}       # 飞书应用 App Secret
+
+  # 事件订阅安全配置（使用 WebSocket 长连接时可留空，Webhook 模式下必填）
+  encrypt_key: ${FEISHU_ENCRYPT_KEY:}                       # 事件加密 Key（可选）
+  verification_token: ${FEISHU_VERIFICATION_TOKEN:}         # 验证 Token（可选）
+
+  # 机器人自身的 open_id（用于过滤机器人自身发送的消息，防止循环回复）
+  # 获取方式: 在飞书开发者后台 > 凭证与基础信息 > 机器人信息中查看
+  bot_user_id: ${FEISHU_BOT_OPEN_ID:}
+
+  # 消息去重缓存大小（LRU），防止飞书平台重复推送事件导致重复处理
+  dedupe_cache_size: 1000
+
+  # 默认回复消息类型
+  # - "text": 纯文本（默认）
+  # - "rich_text": 富文本（按换行拆分为多行，保留段落结构）
+  default_reply_type: "text"
+
+  # Session ↔ 飞书 ID 持久化缓存文件路径
+  # 用于进程重启后恢复 session_key → (open_id/chat_id) 映射，并在启动时预连接已知 session
+  # 设置后，每次新 feishu session 激活时会自动原子写入此文件
+  existing_session_cache: !join_path ["@{pyclaego.root_path}", ".cache", ".feishu_sessions.json"]
+
+  # WebSocket 长连接保活配置（向 CoreScheduler 的持久 ws）
+  ws_ping_interval: 30        # 空闲时发送 ping 的间隔（秒）
+  ws_ping_timeout: 10         # 等待 pong 响应的超时（秒），超时后视为断连
+  ws_reconnect_delay: 5       # ws 断开后等待多少秒再尝试重连（秒）

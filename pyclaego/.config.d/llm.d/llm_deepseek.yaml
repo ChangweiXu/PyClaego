@@ -1,0 +1,23 @@
+
+dpsk_v4p:  # DeepSeek V4 Pro 模型配置示例
+  api: "deepseek"                # OpenAI 协议 + DeepSeek reasoning_content 思考模式
+  api_key: ${DEEPSEEK_API_KEY:}
+  base_url: "https://api.deepseek.com"              # OpenAI
+  model: "deepseek-v4-pro"
+  max_tokens: 25600             # max: 384K
+  max_context_tokens: 960000    # max: 1M
+  reasoning_effort: "high"
+  extra_body:                   # 额外请求体参数示例
+    thinking:
+      type: "enabled"           # 启用深度思考模式
+
+dpsk_v4p_ant:  # DeepSeek V4 Pro 模型配置示例
+  api: "deepseek_anthropic"      # DeepSeek Anthropic-compat 端点
+  api_key: ${DEEPSEEK_API_KEY:}
+  base_url: "https://api.deepseek.com/anthropic"    # Anthropic
+  model: "deepseek-v4-pro"
+  max_tokens: 25600             # max: 384K
+  max_context_tokens: 960000    # max: 1M
+  extra_body:                   # 额外请求体参数示例
+    output_config:              # 输出配置
+      effort: "high"            # 启用深度思考模式

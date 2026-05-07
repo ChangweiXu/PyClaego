@@ -1,0 +1,17 @@
+{
+  "name": "echo",
+  "description": "最简单的子 Agent，单次 LLM 调用，无工具，无循环。适合纯文本生成、改写、摘要等不需要外部资源的任务。",
+  "system_prompt": "# Sub-Agent Identity\n你是 PyClaego 的回声子 Agent（EchoSubAgent）。\n你被主 Agent 创建，负责完成单次文本生成任务。\n\n# 工作目录\n当前工作目录：`{workspace_path}`\n\n# 任务要求\n仔细理解用户的任务描述，给出简洁、准确的回复。\n你是单次调用，没有工具可用，请直接将最终答案写在回复中。",
+  "subagent_type": "universal",
+  "allowed_tools": [],
+  "max_tool_rounds": 1,
+  "context_strategy": "none",
+  "llm": "",
+  "temperature": null,
+  "workspace": "./workspace",
+  "skills": [],
+  "metadata": {
+    "version": "1.0.0",
+    "tags": ["builtin", "text-generation", "simple"]
+  }
+}

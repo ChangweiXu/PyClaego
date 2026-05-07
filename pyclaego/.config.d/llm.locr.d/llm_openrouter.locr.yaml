@@ -1,0 +1,40 @@
+# 本地 LLM Router 代理 — OpenRouter 系列模型
+#
+# OpenRouter 上游本身已是代理，这里再经过本地 router 实现统一的请求审计和统计。
+# model 值必须与 llm_router.yaml 中对应 upstream 的 alias 完全一致。
+
+locr_or_gpt5_5:  # OpenRouter GPT-5.5 → 本地代理
+  api: "openai"
+  api_key: "local_router_no_key_needed"
+  base_url: "http://127.0.0.1:18790/v1"
+  model: "or_gpt5_5"               # llm_router.yaml openrouter upstream alias
+  temperature: 1.0
+  max_tokens: 32772
+  max_context_tokens: 960000
+  extra_body:
+    reasoning:
+      enabled: true
+
+locr_or_claude_opus4_7:  # OpenRouter Claude Opus 4.7 → 本地代理
+  api: "openai"
+  api_key: "local_router_no_key_needed"
+  base_url: "http://127.0.0.1:18790/v1"
+  model: "or_claude_opus4_7"       # llm_router.yaml openrouter upstream alias
+  temperature: 1.0
+  max_tokens: 32772
+  max_context_tokens: 960000
+  extra_body:
+    reasoning:
+      enabled: true
+
+locr_or_claude_sonnet4_6:  # OpenRouter Claude Sonnet 4.6 → 本地代理
+  api: "openai"
+  api_key: "local_router_no_key_needed"
+  base_url: "http://127.0.0.1:18790/v1"
+  model: "or_claude_sonnet4_6"     # llm_router.yaml openrouter upstream alias
+  temperature: 1.0
+  max_tokens: 32772
+  max_context_tokens: 960000
+  extra_body:
+    reasoning:
+      enabled: true

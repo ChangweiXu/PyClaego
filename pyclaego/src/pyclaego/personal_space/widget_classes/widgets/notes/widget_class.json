@@ -1,0 +1,37 @@
+{
+    "class_id": "notes",
+    "title": "Notes",
+    "description": "Markdown knowledge base widget — manages a directory of .md files with full-text search, tag graph, and doc-link graph. Includes a Librarian agent for conversational assistance.",
+    "schema_file": "schema.sql",
+    "defaults": {
+        "agent": {
+            "type": "pipeline"
+        },
+        "context": {
+            "type": "pipeline_window",
+            "system_prompt_file": "prompts/librarian.system.md"
+        },
+        "widget_tools": {
+            "widget_emit": {"enabled": true}
+        }
+    },
+    "config_schema": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["doc_root"],
+        "properties": {
+            "doc_root": {
+                "type": "string",
+                "description": "Absolute (or ~-prefixed) path to the notes directory. Also serves as the project root; project.db is created here."
+            },
+            "agent": {
+                "type": "object",
+                "description": "Override the Librarian agent config (model, temperature, etc.)."
+            },
+            "context": {
+                "type": "object",
+                "description": "Override the Librarian context config."
+            }
+        }
+    }
+}

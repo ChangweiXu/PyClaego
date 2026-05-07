@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bdx:doc xmlns:bdx="https://pyclaego.local/bdx/v1">
+  <bdx:meta>
+    <bdx:title>Welcome to Notes</bdx:title>
+  </bdx:meta>
+  <bdx:body>
+    <bdx:block type="heading" level="1" id="b_wel1">
+      <bdx:content><![CDATA[Welcome to Notes]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="paragraph" id="b_wel2">
+      <bdx:content><![CDATA[This is your personal knowledge base. Here's what you can do:]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="heading" level="2" id="b_wel3">
+      <bdx:content><![CDATA[Quick Start]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="paragraph" id="b_wel4">
+      <bdx:content><![CDATA[Write rich-text notes using the block editor — headings, code, quotes, lists, images, and more.]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="paragraph" id="b_wel5">
+      <bdx:content><![CDATA[Organise files into folders using the file tree on the left.]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="paragraph" id="b_wel6">
+      <bdx:content><![CDATA[Search full-text with the Search drawer (top of sidebar).]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="paragraph" id="b_wel7">
+      <bdx:content><![CDATA[Connect notes with doc links — type ]]></bdx:content>
+      <bdx:link target="getting-started.bdx" anchor="" display="getting-started"/>
+      <bdx:content><![CDATA[ to link to another note.]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="paragraph" id="b_wel8">
+      <bdx:content><![CDATA[Tag content with inline tags — ]]></bdx:content>
+      <bdx:tag name="example"/>
+      <bdx:content><![CDATA[ — visible in the Tags drawer.]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="paragraph" id="b_wel9">
+      <bdx:content><![CDATA[Ask the Librarian (sidebar) for conversational help — summarise, search, or create notes.]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="heading" level="2" id="b_wel10">
+      <bdx:content><![CDATA[Doc Links]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="paragraph" id="b_wel11">
+      <bdx:content><![CDATA[Reference another note by inserting a link block. Links become graph edges visible in the Graph drawer.]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="heading" level="2" id="b_wel12">
+      <bdx:content><![CDATA[Block Anchors]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="paragraph" id="b_wel13">
+      <bdx:content><![CDATA[Every block has a stable ID (e.g. ]]></bdx:content>
+      <bdx:content><![CDATA[b_wel1]]></bdx:content>
+      <bdx:content><![CDATA[). Select text, click "Link Comments" to copy a deep-link anchor or create a comment note.]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="divider" id="b_wel14"/>
+    <bdx:block type="paragraph" id="b_wel15">
+      <bdx:content><![CDATA[See also: ]]></bdx:content>
+      <bdx:link target="getting-started.bdx" anchor="" display="Getting Started"/>
+      <bdx:content><![CDATA[ | ]]></bdx:content>
+      <bdx:link target="examples/note-a.bdx" anchor="" display="Example Note"/>
+    </bdx:block>
+  </bdx:body>
+</bdx:doc>

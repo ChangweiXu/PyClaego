@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bdx:doc xmlns:bdx="https://pyclaego.local/bdx/v1">
+  <bdx:meta>
+    <bdx:title>Getting Started</bdx:title>
+  </bdx:meta>
+  <bdx:body>
+    <bdx:block type="heading" level="1" id="b_gs01">
+      <bdx:content><![CDATA[Getting Started]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="paragraph" id="b_gs02">
+      <bdx:content><![CDATA[Everything in this knowledge base is stored as ]]></bdx:content>
+      <bdx:tag name="bdx"/>
+      <bdx:content><![CDATA[ XML documents — lightweight, structured, and easy to index.]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="heading" level="2" id="b_gs03">
+      <bdx:content><![CDATA[Creating Notes]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="paragraph" id="b_gs04">
+      <bdx:content><![CDATA[Click the + button next to any folder in the file tree. Enter a name ending in ]]></bdx:content>
+      <bdx:content><![CDATA[.bdx]]></bdx:content>
+      <bdx:content><![CDATA[ and the note is created.]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="heading" level="2" id="b_gs05">
+      <bdx:content><![CDATA[Editing]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="paragraph" id="b_gs06">
+      <bdx:content><![CDATA[The editor is a WYSIWYG block editor — no separate preview. Type ]]></bdx:content>
+      <bdx:content><![CDATA[/]]></bdx:content>
+      <bdx:content><![CDATA[ to insert a new block type (heading, code, quote, list, image, divider, callout…).]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="heading" level="2" id="b_gs07">
+      <bdx:content><![CDATA[Keyboard Shortcuts]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="list" style="ordered" id="b_gs08">
+      <bdx:listItem id="b_gs08a"><bdx:content><![CDATA[Ctrl/⌘ S — save immediately]]></bdx:content></bdx:listItem>
+      <bdx:listItem id="b_gs08b"><bdx:content><![CDATA[/ — open block type menu]]></bdx:content></bdx:listItem>
+      <bdx:listItem id="b_gs08c"><bdx:content><![CDATA[@ — link to another note]]></bdx:content></bdx:listItem>
+    </bdx:block>
+    <bdx:block type="heading" level="2" id="b_gs09">
+      <bdx:content><![CDATA[Block IDs & Deep Links]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="paragraph" id="b_gs10">
+      <bdx:content><![CDATA[Every block gets a stable ID (]]></bdx:content>
+      <bdx:content><![CDATA[b_xxxx]]></bdx:content>
+      <bdx:content><![CDATA[) assigned on first save. This ID is the anchor target for deep links and the backlinks sidebar.]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="heading" level="2" id="b_gs11">
+      <bdx:content><![CDATA[Search]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="paragraph" id="b_gs12">
+      <bdx:content><![CDATA[Full-text search uses SQLite FTS5 across all note content (plain text, stripped of XML). Open the Search drawer and type to filter results.]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="callout" id="b_gs13">
+      <bdx:content><![CDATA[Tip: Use the Graph drawer to explore link connections across your vault.]]></bdx:content>
+    </bdx:block>
+    <bdx:block type="divider" id="b_gs14"/>
+    <bdx:block type="paragraph" id="b_gs15">
+      <bdx:content><![CDATA[Back to ]]></bdx:content>
+      <bdx:link target="welcome.bdx" anchor="" display="Welcome"/>
+      <bdx:content><![CDATA[ | See the ]]></bdx:content>
+      <bdx:link target="examples/note-a.bdx" anchor="" display="Example Note A"/>
+    </bdx:block>
+  </bdx:body>
+</bdx:doc>
